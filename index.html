@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLC</title>
+    <title>JLC | Portfolio</title>
 
-    <!-- Favicon -->
+    <!-- Favicon (SVG) -->
     <link href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>" rel="icon">
 
     <!-- Bootstrap CSS -->
@@ -13,6 +13,9 @@
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- DEV-ICON (for skill logos) - https://devicon.dev/ -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
 
     <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +23,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /*
+         * MOBILE-FIRST RESPONSIVE DESIGN
+         * -------------------------------
+         * Base styles are for mobile. Enhancements for larger screens
+         * are added inside the @media (min-width: ...) query.
+        */
+
         :root {
             --dark-blue: #0f172a;
             --slate: #f8fafc;
@@ -27,11 +37,12 @@
             --accent: #5effd4;
             --accent-glow: rgba(94, 255, 212, 0.5);
             
-            /* Define heights for fixed elements */
+            /* Heights for fixed elements */
             --top-nav-height: 72px; 
             --bottom-nav-height: 65px;
         }
 
+        /* --- Base & Global Styles --- */
         html {
             scroll-behavior: smooth;
             overscroll-behavior-y: contain;
@@ -44,6 +55,15 @@
             overflow-x: hidden;
             background-image: linear-gradient(180deg, #1e293b, var(--dark-blue));
             cursor: none; 
+            /* Add padding for the fixed bottom mobile nav */
+            padding-bottom: var(--bottom-nav-height);
+        }
+
+        /* --- Accessibility: Better Focus State for Keyboard Navigation --- */
+        a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+            border-radius: 4px;
         }
 
         /* --- Loading Screen Styles --- */
@@ -60,27 +80,28 @@
         #app { transition: opacity 0.8s ease-in; }
 
         /* --- Custom Cursor --- */
-        @media (pointer: coarse) {
-            body { cursor: auto; }
-            .cursor { display: none !important; }
-        }
         .cursor { position: fixed; z-index: 9999; pointer-events: none; transition: transform 0.2s, opacity 0.2s; will-change: transform; }
         .cursor-dot { width: 8px; height: 8px; background-color: var(--accent); border-radius: 50%; transform: translate(-50%, -50%); }
         .cursor-circle { width: 40px; height: 40px; border: 1px solid var(--accent); border-radius: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0; transition: transform 0.3s ease-out, opacity 0.3s ease-out; }
         body.cursor-interact .cursor-circle { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        /* Disable custom cursor on touch devices */
+        @media (pointer: coarse) {
+            body { cursor: auto; }
+            .cursor { display: none !important; }
+        }
 
-        /* --- Scrollbar --- */
+        /* --- Custom Scrollbar (WebKit/Blink browsers) --- */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--dark-blue); }
         ::-webkit-scrollbar-thumb { background-color: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background-color: #475569; }
         
-        /* --- General Animations --- */
+        /* --- General Animations & Effects --- */
         .animate-on-scroll { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
         .glass-effect { background: rgba(30, 41, 59, 0.5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        /* --- Main Nav Bar (Top) --- */
+        /* --- Desktop Nav Bar (Top) --- */
         .navbar { transition: background-color 0.4s ease; }
         .navbar.scrolled { background-color: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
         .navbar-brand, .nav-link { font-weight: 600; color: var(--slate); }
@@ -88,8 +109,27 @@
         .nav-link:hover, .nav-link.active { color: var(--accent) !important; }
         .nav-link::after { content: ''; position: absolute; width: 100%; transform: scaleX(0); height: 2px; bottom: -5px; left: 0; background-color: var(--accent); transform-origin: bottom right; transition: transform 0.25s ease-out; }
         .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); transform-origin: bottom left; }
+        .navbar-collapse { display: none; } /* Hidden on mobile by default */
 
-        /* --- Hero Section --- */
+        /* --- Mobile Nav Bar (Bottom) --- */
+        .mobile-nav {
+            display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
+            height: var(--bottom-nav-height); background-color: rgba(15, 23, 42, 0.8);
+            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1); z-index: 1030;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+        }
+        .mobile-nav-inner { display: flex; justify-content: space-around; align-items: center; height: 100%; width: 100%;}
+        .mobile-nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-decoration: none; color: var(--light-slate); font-size: 0.7rem; flex-grow: 1;
+            transition: color 0.2s ease-in-out; padding: 5px 0; -webkit-tap-highlight-color: transparent;
+        }
+        .mobile-nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+        .mobile-nav-item.active,
+        .mobile-nav-item:active { color: var(--accent); }
+
+        /* --- Sections & Components (Mobile First) --- */
         .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 1rem; position: relative; overflow: hidden; background: var(--dark-blue); }
         #tsparticles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         .hero .content-wrapper { animation: fadeInHero 1.5s 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; opacity: 0; transform: translateY(20px); z-index: 1; position: relative; }
@@ -100,11 +140,7 @@
         .typed-cursor { color: var(--accent); animation: blink 0.7s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- Sections --- */
-        .section {
-            padding: 80px 0;
-            scroll-margin-top: var(--top-nav-height); /* THIS IS THE FIX for the overlapping navbar */
-        }
+        .section { padding: 60px 0; scroll-margin-top: var(--top-nav-height); }
         .section-title { text-align: center; margin-bottom: 60px; font-weight: 700; color: var(--slate); font-size: clamp(2rem, 5vw, 2.5rem); position: relative; }
         .section-title::after { content: ''; width: 80px; height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-glow)); position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); border-radius: 2px; opacity: 0.8; }
         
@@ -120,7 +156,7 @@
         .card-body { flex-grow: 1; display: flex; flex-direction: column; padding: 1.5rem; transform: translateZ(10px); }
         .card-title { color: var(--accent); font-weight: 600; }
         .tag-badge { background-color: #334155 !important; color: var(--light-slate) !important; font-weight: 500; border: 1px solid #475569; }
-        .project-links a { font-size: 1.5rem; color: var(--light-slate); transition: color 0.3s, transform 0.3s; }
+        .project-links a { font-size: 1.5rem; color: var(--light-slate); transition: color 0.3s, transform 0.3s; margin-right: 1rem;}
         .project-links a:hover { color: var(--accent); transform: translateY(-3px); }
         
         .contact-btn { background-color: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 12px 30px; font-weight: 600; border-radius: 50px; transition: all 0.3s ease; position: relative; overflow: hidden; z-index: 1; }
@@ -132,47 +168,56 @@
         .social-icons a { font-size: 1.5rem; margin: 0 12px; color: var(--light-slate); transition: color 0.3s, transform 0.3s; display: inline-block; }
         .social-icons a:hover { color: var(--accent); transform: translateY(-5px); }
 
-        /* --- MOBILE NATIVE UI STYLES --- */
-        .mobile-nav {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
-            height: var(--bottom-nav-height); background-color: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1); z-index: 1030;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent);
+            color: var(--dark-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1050;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
         }
-        .mobile-nav-inner { display: flex; justify-content: space-around; align-items: center; height: 100%; }
-        .mobile-nav-item {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-decoration: none; color: var(--light-slate); font-size: 0.7rem; flex-grow: 1;
-            transition: color 0.2s ease-in-out; padding: 5px 0; -webkit-tap-highlight-color: transparent;
-        }
-        .mobile-nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
-        .mobile-nav-item.active,
-        .mobile-nav-item:active { color: var(--accent); }
-        
-        @media (max-width: 767.98px) {
-            body { padding-bottom: var(--bottom-nav-height); }
-            .navbar .navbar-collapse { display: none !important; }
-            .mobile-nav { display: block; }
-            .section { padding: 60px 0; }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
+        /* --- DESKTOP/TABLET ENHANCEMENTS (min-width: 768px) --- */
+        @media (min-width: 768px) {
+            /* Hide mobile bottom nav, remove body padding */
+            .mobile-nav { display: none; }
+            body { padding-bottom: 0; }
+            
+            /* Show desktop nav links */
+            .navbar .navbar-collapse { display: block !important; }
+
+            /* Increase section padding */
+            .section { padding: 80px 0; }
+        }
     </style>
 </head>
-<body data-bs-spy="scroll" data-bs-target="#main-nav-spy-target" data-bs-offset="75" class="loading">
-    <!-- Loading Screen -->
-    <div id="loader"><p id="loader-text">Entering to Jeron Luther's Portfolio<span id="loader-ellipsis"></span></p></div>
-
-    <!-- Custom cursor elements -->
+<body data-bs-spy="scroll" data-bs-target="#main-nav" data-bs-offset="75" class="loading">
+    
+    <div id="loader"><p id="loader-text">Entering Jeron Luther's Portfolio<span id="loader-ellipsis"></span></p></div>
     <div class="cursor cursor-dot"></div>
     <div class="cursor cursor-circle"></div>
     
     <div id="app" style="visibility: hidden; opacity: 0;">
-        <!-- Navigation Bar (Top - for Desktop) -->
-        <nav :class="['navbar', 'navbar-expand-md', 'fixed-top', 'px-3', { 'scrolled': isScrolled }]">
+        
+        <nav id="main-nav" :class="['navbar', 'navbar-expand-md', 'fixed-top', 'px-3', { 'scrolled': isScrolled }]">
             <div class="container-fluid">
                 <a class="navbar-brand cursor-interact" href="#home">{{ name }}</a>
-                <div class="collapse navbar-collapse" id="main-nav-spy-target">
+                <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link cursor-interact" href="#home">Home</a></li>
                         <li class="nav-item"><a class="nav-link cursor-interact" href="#about">About</a></li>
@@ -184,23 +229,21 @@
             </div>
         </nav>
 
-        <!-- Hero Section -->
         <section id="home" class="hero">
             <div id="tsparticles"></div>
             <div class="content-wrapper">
                 <p class="mb-2">Hi, my name is</p>
                 <h1>{{ name.split(' ')[0] }} <span>{{ name.split(' ')[1] }}</span>.</h1>
-                <p>I build things to solve a problem. <span class="typed-text">{{ currentTypedText }}</span><span class="typed-cursor"> </span></p>
+                <p>I build things to solve problems. <span class="typed-text">{{ currentTypedText }}</span><span class="typed-cursor"> </span></p>
             </div>
         </section>
 
-        <!-- About Me Section -->
         <section id="about" class="section">
             <div class="container">
                 <h2 class="section-title animate-on-scroll">About Me</h2>
                 <div class="row align-items-center justify-content-center">
                     <div class="col-lg-4 col-md-6 text-center animate-on-scroll" style="transition-delay: 100ms;">
-                        <img :src="about.imageUrl" alt="Profile Picture" class="img-fluid mb-4 mb-lg-0" style="max-width: 250px;">
+                        <img :src="about.imageUrl" alt="Profile Picture of Jeron Luther Castro" class="img-fluid mb-4 mb-lg-0" style="max-width: 250px;">
                     </div>
                     <div class="col-lg-8 col-md-12 animate-on-scroll" style="transition-delay: 200ms;">
                         <p class="lead" v-html="about.description"></p>
@@ -209,7 +252,6 @@
             </div>
         </section>
 
-        <!-- Skills Section -->
         <section id="skills" class="section">
              <div class="container">
                  <h2 class="section-title animate-on-scroll">My Toolkit</h2>
@@ -224,14 +266,14 @@
              </div>
         </section>
 
-        <!-- Projects Section -->
         <section id="projects" class="section">
             <div class="container">
                 <h2 class="section-title animate-on-scroll">Things I've Built</h2>
                 <div class="row g-5">
                     <div class="col-lg-4 col-md-6 d-flex align-items-stretch" v-for="(project, index) in projects" :key="project.title">
                         <div class="card tilt-card glass-effect animate-on-scroll cursor-interact" :style="{ transitionDelay: index * 100 + 'ms' }">
-                            <img :src="project.imageUrl" class="card-img-top" :alt="project.title">
+                            <!-- PERFORMANCE: Added loading="lazy" to defer offscreen image loading, plus width/height to prevent layout shift. -->
+                            <img :src="project.imageUrl" class="card-img-top" :alt="project.title" loading="lazy" width="600" height="400">
                             <div class="card-body">
                                 <h5 class="card-title">{{ project.title }}</h5>
                                 <p class="card-text">{{ project.description }}</p>
@@ -239,8 +281,9 @@
                                     <span v-for="tag in project.tags" :key="tag" class="badge rounded-pill me-2 mb-1 tag-badge">{{ tag }}</span>
                                 </div>
                                 <div class="project-links mt-auto pt-3">
-                                    <a v-if="project.liveUrl" :href="project.liveUrl" target="_blank" rel="noopener noreferrer" title="Live Demo" class="cursor-interact"><i class="bi bi-box-arrow-up-right"></i></a>
-                                    <a v-if="project.repoUrl" :href="project.repoUrl" target="_blank" rel="noopener noreferrer" title="GitHub Repository" class="cursor-interact"><i class="bi bi-github"></i></a>
+                                    <!-- ACCESSIBILITY & UX: v-if checks if a URL exists, and :aria-label provides context for screen readers. -->
+                                    <a v-if="project.liveUrl && project.liveUrl !== '#'" :href="project.liveUrl" target="_blank" rel="noopener noreferrer" :aria-label="'View live demo of ' + project.title" class="cursor-interact"><i class="bi bi-box-arrow-up-right"></i></a>
+                                    <a v-if="project.repoUrl && project.repoUrl !== '#'" :href="project.repoUrl" target="_blank" rel="noopener noreferrer" :aria-label="'View GitHub repository for ' + project.title" class="cursor-interact"><i class="bi bi-github"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -249,33 +292,28 @@
             </div>
         </section>
 
-        <!-- Contact Section -->
         <section id="contact" class="section">
             <div class="container text-center">
                  <h2 class="section-title animate-on-scroll">Get In Touch</h2>
                  <div class="animate-on-scroll" style="transition-delay: 100ms;">
                     <p class="lead mb-4 mx-auto" style="max-width: 600px;">My inbox is always open. Whether you have a question, a project proposal, or just want to say hello, I'll get back to you!</p>
-                    <a :href="'mailto:' + contact.email" class="btn btn-lg contact-btn cursor-interact">
-                        Say Hello
-                    </a>
+                    <a :href="'mailto:' + contact.email" class="btn btn-lg contact-btn cursor-interact">Say Hello</a>
                  </div>
             </div>
         </section>
 
-        <!-- Footer -->
         <footer class="footer">
             <div class="container">
                 <div class="social-icons mb-3">
-                    <a v-if="contact.github" :href="contact.github" target="_blank" rel="noopener noreferrer" class="cursor-interact"><i class="bi bi-github"></i></a>
-                    <a v-if="contact.instagram" :href="contact.instagram" target="_blank" rel="noopener noreferrer" class="cursor-interact"><i class="bi bi-instagram"></i></a>
-                    <a v-if="contact.facebook" :href="contact.facebook" target="_blank" rel="noopener noreferrer" class="cursor-interact"><i class="bi bi-facebook"></i></a>
+                    <a v-if="contact.github" :href="contact.github" target="_blank" rel="noopener noreferrer" class="cursor-interact" aria-label="Jeron Luther on GitHub"><i class="bi bi-github"></i></a>
+                    <a v-if="contact.instagram" :href="contact.instagram" target="_blank" rel="noopener noreferrer" class="cursor-interact" aria-label="Jeron Luther on Instagram"><i class="bi bi-instagram"></i></a>
+                    <a v-if="contact.facebook" :href="contact.facebook" target="_blank" rel="noopener noreferrer" class="cursor-interact" aria-label="Jeron Luther on Facebook"><i class="bi bi-facebook"></i></a>
                 </div>
                 <p class="mb-0 text-muted">Designed & Built by {{ name }} © {{ new Date().getFullYear() }}</p>
             </div>
         </footer>
 
-        <!-- Mobile Bottom Tab Bar -->
-        <nav class="mobile-nav" id="main-nav-spy-target">
+        <nav class="mobile-nav" data-bs-target="#main-nav" id="mobile-nav-spy-target">
             <div class="mobile-nav-inner">
                 <a class="mobile-nav-item nav-link" href="#home"><i class="bi bi-house-door-fill"></i><span>Home</span></a>
                 <a class="mobile-nav-item nav-link" href="#about"><i class="bi bi-person-fill"></i><span>About</span></a>
@@ -284,7 +322,11 @@
                 <a class="mobile-nav-item nav-link" href="#contact"><i class="bi bi-envelope-fill"></i><span>Contact</span></a>
             </div>
         </nav>
-
+        
+        <!-- UX Enhancement: Back to Top button -->
+        <a href="#home" :class="['back-to-top', 'cursor-interact', { 'visible': isScrolled }]" aria-label="Back to top">
+            <i class="bi bi-arrow-up"></i>
+        </a>
     </div>
 
     <!-- SCRIPTS -->
@@ -293,63 +335,59 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
-        // --- Loader & Ellipsis Script ---
         const ellipsisElement = document.getElementById('loader-ellipsis');
         let dotCount = 1, isIncrementing = true;
         const animateEllipsis = () => {
             if (!ellipsisElement) return;
             ellipsisElement.textContent = '.'.repeat(dotCount);
-            if (isIncrementing) dotCount++; else dotCount--;
-            if (dotCount > 3) { isIncrementing = false; dotCount = 2; }
-            if (dotCount < 1) { isIncrementing = true; dotCount = 2; }
+            dotCount = (dotCount % 3) + 1;
         };
         let ellipsisInterval = setInterval(animateEllipsis, 400);
 
         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');
             const appContent = document.getElementById('app');
-            const body = document.body;
             setTimeout(() => {
                 clearInterval(ellipsisInterval);
                 loader.classList.add('loader-hidden');
                 appContent.style.visibility = 'visible';
                 appContent.style.opacity = '1';
-                body.classList.remove('loading');
+                document.body.classList.remove('loading');
             }, 1500); 
         });
     </script>
     
     <script>
-        const app = Vue.createApp({
-            // Your Vue data, methods, etc. (UNCHANGED)
+        Vue.createApp({
             data() {
                 return {
                     name: 'Jeron Luther Castro', 
                     typedTextOptions: [
                         "I'm a computer programming enthusiast.",
-                        "I create full-stack microwebsite",
+                        "I create full-stack microwebsites.",
                     ],
                     about: {
                         imageUrl: 'https://placehold.co/300x300/5effd4/0f172a?text=JLC',
                         description: "Hi, I'm Jeron Luther. I graduated with a degree in Bachelor of Industrial Technology, majoring in Technical-Vocational Teacher Education, with a specialization in Computer Programming Technology from Universidad de Manila 🇵🇭. <br><br>Currently, I am employed as a Data Management Associate, where I use Google Workspace to develop several microwebsites that support our division’s mall operations. On the client side, I use HTML, Bootstrap, and Vue.js 3, while on the server side, I use JavaScript. Our data is stored in Google Drive and Google Spreadsheets. <br><br>These microwebsites help the mall operations team digitally monitor defective areas and equipment and address them in real time. We also have a portal that enables our team to upload and manage bill-to-tenant files efficiently, allowing for fast-paced data collection. <br>Currently, I am developing a memo routing app used across multiple departments to track and monitor company documents, especially memos. I also utilize Google Apps Script to automate repetitive tasks, such as consolidating data from multiple sources, all with just a few clicks. <br><br> Throughout this journey, I actively collaborate with AI tools to support the development and automation of these apps, helping solve real business problems with increased speed and precision. <br>And that’s how my journey continues to grow."
                     },
                     skills: [ 
-                        { name: 'HTML', icon: 'bi bi-filetype-html' },
-                        { name: 'CSS', icon: 'bi bi-filetype-css' },
-                        { name: 'JavaScript', icon: 'bi bi-filetype-js' },
-                        { name: 'Github', icon: 'bi bi-github' },
-                        { name: 'Java', icon: 'bi bi-filetype-java' }, 
-                        { name: 'AI-Assisted Coding', icon: 'bi bi-robot' },
-                        { name: 'Google Apps Script', icon: 'bi bi-google' },
-                        { name: 'Vue.js', icon: '' },
-                        { name: 'PHP', icon: '' },
-                        { name: 'MySQL', icon: '' }, 
+                        { name: 'HTML5', icon: 'devicon-html5-plain' },
+                        { name: 'CSS3', icon: 'devicon-css3-plain' },
+                        { name: 'JavaScript', icon: 'devicon-javascript-plain' },
+                        { name: 'Vue.js', icon: 'devicon-vuejs-plain' },
+                        { name: 'Bootstrap', icon: 'devicon-bootstrap-plain' },
+                        { name: 'Github', icon: 'devicon-github-original' },
+                        { name: 'Google Apps Script', icon: 'bi bi-google' }, // Devicon doesn't have GAS
+                        { name: 'PHP', icon: 'devicon-php-plain' },
+                        { name: 'MySQL', icon: 'devicon-mysql-plain-wordmark' },
+                        { name: 'Java', icon: 'devicon-java-plain' }, 
+                        { name: 'AI-Assisted', icon: 'bi bi-robot' },
                     ],
                     projects: [
                         {
                             title: 'Mall Operation Checklist',
                             description: 'A customized micro-website that documented defective areas in the mall and rectified the inspected deficiencies in real-time.',
-                            imageUrl: 'https://placehold.co/600x400/0f172a/5effd4?text=MALL OPERATION CHECKLIST',
+                            imageUrl: 'https://placehold.co/600x400/0f172a/5effd4?text=PROJECT+1',
                             tags: ['Vue 3', 'HTML', 'Bootstrap', 'Google Apps Script'],
                             liveUrl: '#',
                             repoUrl: '#'
@@ -357,15 +395,15 @@
                         {
                             title: 'Contract Finder',
                             description: 'A customized micro-website used to collect contracts and track them digitally.',
-                            imageUrl: 'https://placehold.co/600x400/0f172a/5effd4?text=CONTRACT FINDER',
+                            imageUrl: 'https://placehold.co/600x400/0f172a/5effd4?text=PROJECT+2',
                             tags: ['Vue 3', 'HTML', 'Bootstrap','Google Apps Script'],
                             liveUrl: '#',
-                            repoUrl: '#'
+                            repoUrl: '' // Example of a missing link that won't show an icon
                         },
                         {
                             title: 'Bill to Tenant Portal',
-                            description: 'A customized micro-website used to collect bill-to-tenant files from multiple malls, with automated email notifications sent after successful submissions within a specified period.',
-                            imageUrl: 'https://placehold.co/600x400/0f172a/5effd4?text=BILL TO TENANT PORTAL',
+                            description: 'A customized micro-website used to collect bill-to-tenant files from multiple malls, with automated email notifications sent after successful submissions.',
+                            imageUrl: 'https://placehold.co/600x400/0f172a/5effd4?text=PROJECT+3',
                             tags: ['Vue 3', 'HTML', 'Bootstrap', 'Google Apps Script'],
                             liveUrl: '#',
                             repoUrl: '#'
@@ -390,17 +428,56 @@
             methods: {
                 handleScroll() { this.isScrolled = window.scrollY > 50; },
                 typeWriter() {
-                    const current = this.typedTextOptions[this.typedTextOptionsIndex];
-                    if (!this.typeStatus) { this.currentTypedText = current.substring(0, this.charIndex + 1); this.charIndex++; if (this.charIndex >= current.length) { this.typeStatus = true; setTimeout(this.typeWriter, this.newTextDelay); } else { setTimeout(this.typeWriter, this.typingSpeed); } } else { this.currentTypedText = current.substring(0, this.charIndex - 1); this.charIndex--; if (this.charIndex < 0) { this.typeStatus = false; this.typedTextOptionsIndex = (this.typedTextOptionsIndex + 1) % this.typedTextOptions.length; setTimeout(this.typeWriter, this.typingSpeed); } else { setTimeout(this.typeWriter, this.erasingSpeed); } }
+                    if (this.charIndex < this.typedTextOptions[this.typedTextOptionsIndex].length && !this.typeStatus) {
+                        this.currentTypedText += this.typedTextOptions[this.typedTextOptionsIndex].charAt(this.charIndex);
+                        this.charIndex++;
+                        setTimeout(this.typeWriter, this.typingSpeed);
+                    } else if (this.charIndex > 0 && this.typeStatus) {
+                        this.currentTypedText = this.typedTextOptions[this.typedTextOptionsIndex].substring(0, this.charIndex - 1);
+                        this.charIndex--;
+                        setTimeout(this.typeWriter, this.erasingSpeed);
+                    } else {
+                        this.typeStatus = !this.typeStatus;
+                        if (!this.typeStatus) this.typedTextOptionsIndex = (this.typedTextOptionsIndex + 1) % this.typedTextOptions.length;
+                        setTimeout(this.typeWriter, this.newTextDelay);
+                    }
                 },
                 setupScrollAnimations() {
-                    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); 
+                    }, { threshold: 0.1 });
                     document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
                 },
                 setupInteractiveEffects() {
+                    // Initialize tsParticles background
                     if (window.tsParticles) { tsParticles.load("tsparticles", { fpsLimit: 120, particles: { number: { value: 80, density: { enable: true, value_area: 800 } }, color: { value: "#5effd4" }, shape: { type: "circle" }, opacity: { value: 0.5, random: true }, size: { value: 2, random: true }, links: { enable: true, distance: 150, color: "#94a3b8", opacity: 0.4, width: 1 }, move: { enable: true, speed: 1, direction: "none", outModes: { default: "out" } } }, interactivity: { events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" } }, modes: { repulse: { distance: 100 }, push: { particles_nb: 4 } } }, retina_detect: true, background: { color: "transparent" } }); }
-                    if (window.matchMedia("(pointer: fine)").matches) { document.querySelectorAll('.tilt-card').forEach(card => { const maxRotate = 15; card.addEventListener('mousemove', (e) => { const rect = card.getBoundingClientRect(), x = e.clientX - rect.left, y = e.clientY - rect.top, { width, height } = rect, rotateY = (x / width - 0.5) * maxRotate * -1, rotateX = (y / height - 0.5) * maxRotate; card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`; }); card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)'; }); }); }
-                    const cursorDot = document.querySelector('.cursor-dot'); const cursorCircle = document.querySelector('.cursor-circle'); window.addEventListener('mousemove', e => { const { clientX, clientY } = e; if (cursorDot) cursorDot.style.transform = `translate(${clientX}px, ${clientY}px)`; if (cursorCircle) cursorCircle.style.transform = `translate(${clientX}px, ${clientY}px)`; }); document.querySelectorAll('.cursor-interact').forEach(el => { el.addEventListener('mouseenter', () => document.body.classList.add('cursor-interact')); el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-interact')); });
+                    
+                    // UX ENHANCEMENT: Only enable tilt & custom cursor on devices that are not touch-based
+                    if (window.matchMedia("(pointer: fine)").matches) {
+                        // Card Tilt Effect
+                        document.querySelectorAll('.tilt-card').forEach(card => {
+                            const maxRotate = 10;
+                            card.addEventListener('mousemove', (e) => { 
+                                const rect = card.getBoundingClientRect(), x = e.clientX - rect.left, y = e.clientY - rect.top, { width, height } = rect;
+                                const rotateY = (x / width - 0.5) * maxRotate * -1, rotateX = (y / height - 0.5) * maxRotate; 
+                                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+                            }); 
+                            card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)'; }); 
+                        });
+
+                        // Custom Cursor Logic
+                        const cursorDot = document.querySelector('.cursor-dot');
+                        const cursorCircle = document.querySelector('.cursor-circle');
+                        window.addEventListener('mousemove', e => { 
+                            const { clientX, clientY } = e; 
+                            cursorDot.style.transform = `translate(${clientX - (cursorDot.clientWidth / 2)}px, ${clientY - (cursorDot.clientHeight / 2)}px)`;
+                            cursorCircle.style.transform = `translate(${clientX - (cursorCircle.clientWidth / 2)}px, ${clientY - (cursorCircle.clientHeight / 2)}px)`;
+                        });
+                        document.querySelectorAll('.cursor-interact').forEach(el => {
+                            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-interact')); 
+                            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-interact')); 
+                        });
+                    }
                 }
             },
             mounted() {
@@ -412,8 +489,7 @@
             beforeUnmount() {
                 window.removeEventListener('scroll', this.handleScroll);
             }
-        });
-        app.mount('#app');
+        }).mount('#app');
     </script>
 </body>
 </html>
