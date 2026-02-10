@@ -38,9 +38,15 @@
             background-image: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
             padding-top: var(--navbar-height); 
             padding-bottom: var(--mobile-nav-height); 
+            /* Hide the default cursor so only custom one shows */
+            cursor: none; 
         }
 
+        /* Re-enable cursor for mobile or small screens */
         @media (min-width: 992px) { body { padding-bottom: 0; } }
+        @media (pointer: coarse) { body { cursor: auto; } }
+
+        a, button, input { cursor: none; } /* Ensure interactive elements use custom cursor too */
 
         a { text-decoration: none; color: inherit; transition: all 0.2s ease; }
         ul { list-style: none; padding: 0; margin: 0; }
@@ -53,18 +59,28 @@
             background-color: #fff; z-index: 99999; display: flex;
             justify-content: center; align-items: center; 
             transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+            cursor: auto;
         }
         #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         
-        /* Cursor */
-        .cursor { position: fixed; z-index: 10000; pointer-events: none; }
-        .cursor-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; transform: translate(-50%, -50%); }
-        .cursor-circle { 
-            width: 40px; height: 40px; border: 1px solid rgba(17, 24, 39, 0.4); 
-            border-radius: 50%; transform: translate(-50%, -50%) scale(0.5); 
-            opacity: 0; transition: transform 0.1s, opacity 0.2s; mix-blend-mode: multiply;
+        /* Cursor Styling */
+        .cursor { position: fixed; top: 0; left: 0; z-index: 10000; pointer-events: none; }
+        
+        .cursor-dot { 
+            width: 8px; height: 8px; 
+            background: var(--accent); 
+            border-radius: 50%; 
+            /* Will be positioned via JS */
         }
-        body.cursor-interact .cursor-circle { transform: translate(-50%, -50%) scale(1.5); opacity: 1; border-color: var(--accent); background: rgba(0,0,0,0.03); }
+        
+        .cursor-circle { 
+            width: 40px; height: 40px; 
+            border: 1px solid rgba(17, 24, 39, 0.4); 
+            border-radius: 50%; 
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+            mix-blend-mode: multiply;
+        }
+
         @media (pointer: coarse) { .cursor { display: none !important; } } 
 
         /* Navigation */
@@ -78,6 +94,7 @@
             padding: 0; 
             transition: none !important; 
             display: flex; align-items: center;
+            cursor: none; /* Inherit none */
         }
         .navbar .container { display: flex; align-items: center; height: 100%; }
         .navbar-brand { font-weight: 800; font-size: 1.5rem; color: var(--text-primary); letter-spacing: -1px; margin: 0; }
@@ -104,7 +121,7 @@
         
         .hero-title { font-size: clamp(2.2rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1rem; color: var(--text-primary); }
         
-        /* Glass Cards & Tiles */
+        /* Glass Cards */
         .glass-card {
             background: #fff; border: 1px solid #e5e7eb; border-radius: var(--border-radius); padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02); height: 100%;
@@ -124,7 +141,7 @@
         .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s cubic-bezier(0.5, 0, 0, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* Timeline & Bio */
+        /* Bio Styles */
         .timeline-box { border-left: 2px solid #e5e7eb; padding-left: 20px; padding-bottom: 40px; position: relative; }
         .timeline-box::before { content: ''; width: 12px; height: 12px; background: var(--text-primary); border-radius: 50%; position: absolute; left: -7px; top: 5px; }
         
@@ -134,7 +151,7 @@
         .section-header { margin-bottom: 3rem; text-align: center; }
         .section-header h2 { font-weight: 800; letter-spacing: -0.5px; }
 
-        /* Cert List Styling (Scrollable) */
+        /* Cert List */
         .cert-list { max-height: 450px; overflow-y: auto; padding-right: 5px; }
         .cert-list::-webkit-scrollbar { width: 4px; }
         .cert-list::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
@@ -353,7 +370,7 @@
             data() {
                 return {
                     // IMAGE
-                    profileImage: 'https://raw.githubusercontent.com/mrjeronluther/My-E-Portfolio/2d04d94f2920a26a915bfe6b9e5ee1823a4f2290/profilepic.png',
+                    profileImage: 'C:\\Users\\Acer\\Pictures\\Screenshots\\profilepic.png',
 
                     // TYPEWRITER
                     typedTextOptions: [
@@ -399,7 +416,7 @@
                         }
                     ],
                     
-                    // ALL CERTIFICATES FROM RESUME
+                    // ALL CERTIFICATES
                     certificates: [
                         { date: "Oct 2023", name: "Java Programming (TESDA)" },
                         { date: "Mar 2022", name: "Cyber Security Awareness: Phishing & Scamming (DICT)" },
@@ -429,7 +446,7 @@
                     skills: [
                         "Vue.js 3", "HTML5 & Bootstrap 5", "Google Apps Script", "JavaScript", 
                         "AI Prompt Engineering", "Logic-First Dev", "MySQL & Workbench", 
-                        "Python/PHP/Java", "Git/VSCode", "Google AI Studio"
+                        "Python/PHP/Java", "Github/VSCode", "Google AI Studio"
                     ],
 
                     // PROJECTS
@@ -515,13 +532,16 @@
                 }, { threshold: 0.1 });
                 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+                // FIXED CURSOR ALIGNMENT LOGIC
                 if (window.matchMedia("(pointer: fine)").matches) {
                     const dot = document.querySelector('.cursor-dot');
                     const circle = document.querySelector('.cursor-circle');
                     
                     window.addEventListener('mousemove', e => {
-                        dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-                        circle.style.transform = `translate(${e.clientX}px, ${e.clientY}px) scale(${document.body.classList.contains('cursor-interact') ? 1.5 : 0.5})`;
+                        // INCLUDE "translate(-50%, -50%)" IN THE JS TRANSFORMATION
+                        dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+                        
+                        circle.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%) scale(${document.body.classList.contains('cursor-interact') ? 1.5 : 0.5})`;
                     });
                     
                     document.querySelectorAll('a, button, .cursor-interact').forEach(el => {
