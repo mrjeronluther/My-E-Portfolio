@@ -113,10 +113,24 @@
         .mobile-nav-item.active { color: var(--text-primary); transform: translateY(-3px); opacity: 1; }
 
         /* --- 4. SECTIONS --- */
-        .hero { 
-            position: relative; min-height: calc(100vh - var(--navbar-height));
-            display: flex; align-items: center; justify-content: center; text-align: center; 
-        }
+.hero { 
+    position: relative; 
+    /* Desktop: Total height minus top navbar */
+    min-height: calc(100vh - var(--navbar-height));
+    display: flex; 
+    flex-direction: column; /* Ensures vertical alignment */
+    align-items: center; 
+    justify-content: center; 
+    text-align: center;
+    padding: 2rem 0; /* Optional: prevents text from touching edges on small screens */
+}
+
+/* Adjust for Mobile: Account for both top padding AND bottom nav height */
+@media (max-width: 991px) {
+    .hero {
+        min-height: calc(100vh - var(--navbar-height) - var(--mobile-nav-height));
+    }
+}
         #tsparticles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
         
         .hero-title { font-size: clamp(2.2rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1rem; color: var(--text-primary); }
