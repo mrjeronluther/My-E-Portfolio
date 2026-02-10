@@ -37,13 +37,16 @@
             overflow-x: hidden;
             background-image: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
             padding-top: var(--navbar-height); 
-            padding-bottom: var(--mobile-nav-height); 
+            padding-bottom: 0;
             /* Hide the default cursor so only custom one shows */
             cursor: none; 
         }
 
         /* Re-enable cursor for mobile or small screens */
         @media (min-width: 992px) { body { padding-bottom: 0; } }
+        @media (max-width: 991.98px) {
+                body { padding-bottom: var(--mobile-nav-height); }
+            }
         @media (pointer: coarse) { body { cursor: auto; } }
 
         a, button, input { cursor: none; } /* Ensure interactive elements use custom cursor too */
@@ -113,11 +116,52 @@
         .mobile-nav-item.active { color: var(--text-primary); transform: translateY(-3px); opacity: 1; }
 
         /* --- 4. SECTIONS --- */
-        .hero { 
-            position: relative; min-height: calc(100vh - var(--navbar-height));
-            display: flex; align-items: center; justify-content: center; text-align: center; 
-        }
-        #tsparticles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        /* --- UPDATED HERO CENTERING --- */
+.hero { 
+    position: relative; 
+    display: flex; 
+    align-items: center;      /* Vertically center container */
+    justify-content: center;   /* Horizontally center container */
+    text-align: center; 
+    
+    /* Dynamic height calculation */
+    /* Subtracts the top navbar height */
+    height: calc(100dvh - var(--navbar-height)); 
+    width: 100%;
+    overflow: hidden;
+}
+
+/* On mobile, also subtract the bottom nav height to keep it centered in the visible gap */
+@media (max-width: 991.98px) {
+    .hero {
+        height: calc(100dvh - (var(--navbar-height) + var(--mobile-nav-height)));
+    }
+}
+        @media (max-height: 500px) {
+    .hero {
+        height: auto;
+        min-height: calc(100dvh - var(--navbar-height));
+        padding: 40px 0; 
+    }
+}
+
+/* Ensure the tsparticles stays backgrounded even with height change */
+#tsparticles { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index: -1; 
+}
+
+.hero .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
         
         .hero-title { font-size: clamp(2.2rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1rem; color: var(--text-primary); }
         
