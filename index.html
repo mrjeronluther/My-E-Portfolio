@@ -12,212 +12,254 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- SMOOTH SCROLL (LENIS) CSS -->
-    <style>
-        html.lenis { height: auto; }
-        .lenis-smooth { scroll-behavior: auto !important; }
-        .lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
-        .lenis-stopped { overflow: hidden; }
-        .lenis-scrolling iframe { pointer-events: none; }
-    </style>
 
+    <!-- CORE STYLESHEET -->
     <style>
+        /* --- 1. ROOT VARIABLES --- */
         :root {
-            --bg-body: #f8fafc;       
+            --bg-body: #f3f4f6;       
             --bg-card: #ffffff;       
-            --text-primary: #0f172a;
-            --text-secondary: #64748b;
-            --accent: #0f172a;        
+            --text-primary: #111827;  /* Gunmetal Black */
+            --text-secondary: #4b5563;/* Medium Gray */
+            --accent: #111827;        
+            
             --navbar-height: 80px; 
             --mobile-nav-height: 70px;
-            --border-radius: 12px;     
+            --border-radius: 8px;     
         }
 
-        /* --- BASE --- */
+        /* --- 2. BASE --- */
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-primary);
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            cursor: none; /* Hide default cursor */
+            background-image: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+            padding-top: var(--navbar-height); 
+            padding-bottom: var(--mobile-nav-height); 
+            /* Hide the default cursor so only custom one shows */
+            cursor: none; 
         }
-        @media (max-width: 991px) { body { padding-bottom: var(--mobile-nav-height); } }
+
+        /* Re-enable cursor for mobile or small screens */
+        @media (min-width: 992px) { body { padding-bottom: 0; } }
         @media (pointer: coarse) { body { cursor: auto; } }
 
-        /* --- CURSOR --- */
-        #custom-cursor {
-            position: fixed;
-            top: 0; left: 0;
-            width: 12px; height: 12px;
-            background: var(--accent);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99999;
-            transition: transform 0.1s ease-out, background 0.3s;
+        a, button, input { cursor: none; } /* Ensure interactive elements use custom cursor too */
+
+        a { text-decoration: none; color: inherit; transition: all 0.2s ease; }
+        ul { list-style: none; padding: 0; margin: 0; }
+
+        /* --- 3. UI COMPONENTS --- */
+        
+        /* Loader */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background-color: #fff; z-index: 99999; display: flex;
+            justify-content: center; align-items: center; 
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+            cursor: auto;
         }
-        #cursor-follower {
-            position: fixed;
-            top: 0; left: 0;
-            width: 40px; height: 40px;
-            border: 1px solid rgba(15, 23, 42, 0.3);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99998;
-            transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+        #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        
+        /* Cursor Styling */
+        .cursor { position: fixed; top: 0; left: 0; z-index: 10000; pointer-events: none; }
+        
+        .cursor-dot { 
+            width: 8px; height: 8px; 
+            background: var(--accent); 
+            border-radius: 50%; 
+            /* Will be positioned via JS */
+        }
+        
+        .cursor-circle { 
+            width: 40px; height: 40px; 
+            border: 1px solid rgba(17, 24, 39, 0.4); 
+            border-radius: 50%; 
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+            mix-blend-mode: multiply;
         }
 
-        /* --- NAVIGATION --- */
+        @media (pointer: coarse) { .cursor { display: none !important; } } 
+
+        /* Navigation */
         .navbar {
+            position: fixed !important; top: 0; left: 0; right: 0;
             height: var(--navbar-height);
-            background: rgba(255, 255, 255, 0.8); 
-            backdrop-filter: blur(20px); 
+            background-color: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(15px); 
             border-bottom: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+            z-index: 1030; 
+            padding: 0; 
+            transition: none !important; 
+            display: flex; align-items: center;
+            cursor: none; /* Inherit none */
         }
-        .navbar.scrolled { height: 70px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
+        .navbar .container { display: flex; align-items: center; height: 100%; }
+        .navbar-brand { font-weight: 800; font-size: 1.5rem; color: var(--text-primary); letter-spacing: -1px; margin: 0; }
+        .nav-link { font-weight: 600; color: var(--text-secondary); margin: 0 1rem; font-size: 0.9rem; }
+        .nav-link:hover, .nav-link.active { color: var(--text-primary) !important; }
 
-        /* --- HERO --- */
+        /* Mobile Nav */
+        .mobile-nav {
+            display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
+            height: var(--mobile-nav-height); 
+            background: rgba(255, 255, 255, 0.95); 
+            border-top: 1px solid #e5e7eb; backdrop-filter: blur(10px); z-index: 1030;
+        }
+        .mobile-nav-inner { display: flex; justify-content: space-around; align-items: center; width: 100%; }
+        .mobile-nav-item { font-size: 1.2rem; color: var(--text-secondary); opacity: 0.7; }
+        .mobile-nav-item.active { color: var(--text-primary); transform: translateY(-3px); opacity: 1; }
+
+        /* --- 4. SECTIONS --- */
         .hero { 
-            height: calc(100vh - var(--navbar-height));
-            display: flex; align-items: center; justify-content: center;
-            text-align: center; position: relative; overflow: hidden;
+            position: relative; min-height: calc(100vh - var(--navbar-height));
+            display: flex; align-items: center; justify-content: center; text-align: center; 
         }
-        #tsparticles { position: absolute; inset: 0; z-index: -1; }
-        .hero-title { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; letter-spacing: -2px; line-height: 0.95; }
-
-        /* --- CARDS --- */
+        #tsparticles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        
+        .hero-title { font-size: clamp(2.2rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1rem; color: var(--text-primary); }
+        
+        /* Glass Cards */
         .glass-card {
-            background: #fff; border: 1px solid #e2e8f0; border-radius: var(--border-radius);
-            padding: 2rem; height: 100%; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            background: #fff; border: 1px solid #e5e7eb; border-radius: var(--border-radius); padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .glass-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1); border-color: #d1d5db; }
 
         .tilt-card { 
-            background: #fff; border-radius: var(--border-radius); overflow: hidden;
-            border: 1px solid #e2e8f0; height: 100%;
-            transform-style: preserve-3d; transition: transform 0.1s;
+            background: #fff; border: 1px solid #e5e7eb; border-radius: var(--border-radius);
+            transform-style: preserve-3d; overflow: hidden; height: 100%;
+            transition: transform 0.1s ease-out;
         }
-        .img-container { height: 200px; background: #f1f5f9; overflow: hidden; position: relative; }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .tilt-card .img-container { height: 180px; overflow: hidden; border-bottom: 1px solid #e5e7eb; background: #f8f9fa; }
+        .tilt-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+        .tilt-card:hover img { transform: scale(1.1); }
 
-        /* --- REVEAL ANIMATIONS --- */
-        .reveal { opacity: 0; transform: translateY(50px); transition: all 1s cubic-bezier(0.22, 1, 0.36, 1); }
+        .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s cubic-bezier(0.5, 0, 0, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* --- BIO TIMELINE --- */
-        .timeline-box { border-left: 2px solid #e2e8f0; padding: 0 0 3rem 2rem; position: relative; }
-        .timeline-box::before { 
-            content: ''; width: 14px; height: 14px; background: #000; 
-            border: 3px solid #fff; border-radius: 50%; 
-            position: absolute; left: -8px; top: 0; 
-        }
-
-        .cert-list { max-height: 400px; overflow-y: auto; scrollbar-width: thin; }
-
-        /* MOBILE NAV */
-        .mobile-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--mobile-nav-height);
-            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px);
-            border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-around; z-index: 1000;
-        }
-        .mobile-nav a { color: var(--text-secondary); font-size: 1.2rem; transition: 0.3s; }
-        .mobile-nav a.active { color: var(--text-primary); transform: translateY(-5px); }
+        /* Bio Styles */
+        .timeline-box { border-left: 2px solid #e5e7eb; padding-left: 20px; padding-bottom: 40px; position: relative; }
+        .timeline-box::before { content: ''; width: 12px; height: 12px; background: var(--text-primary); border-radius: 50%; position: absolute; left: -7px; top: 5px; }
         
-        /* SCROLL BAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .profile-pic { width: 100%; border-radius: 8px; box-shadow: 10px 10px 0px rgba(0,0,0,0.1); filter: grayscale(100%); transition: 0.5s; }
+        .profile-pic:hover { filter: grayscale(0%); box-shadow: 15px 15px 0px rgba(0,0,0,0.2); }
 
-        /* TYPEWRITER BLINK */
-        @keyframes blink { 50% { opacity: 0; } }
-        .cursor-blink { animation: blink 0.8s infinite; }
+        .section-header { margin-bottom: 3rem; text-align: center; }
+        .section-header h2 { font-weight: 800; letter-spacing: -0.5px; }
+
+        /* Cert List */
+        .cert-list { max-height: 450px; overflow-y: auto; padding-right: 5px; }
+        .cert-list::-webkit-scrollbar { width: 4px; }
+        .cert-list::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .cert-item { font-size: 0.8rem; padding: 12px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: start;}
+        .cert-item:last-child { border-bottom: none; }
+        .cert-date { font-weight: 800; color: var(--text-secondary); min-width: 80px; font-size: 0.75rem; display: block; }
     </style>
 </head>
 
-<body>
-    <!-- LOADER -->
-    <div id="loader" style="position:fixed; inset:0; background:#fff; z-index:100000; display:flex; align-items:center; justify-content:center; transition: 0.8s ease-in-out;">
-        <h2 class="fw-bold" style="letter-spacing: -1px;">INITIALIZING EXPERIENCE...</h2>
-    </div>
+<body data-bs-spy="scroll" data-bs-target="#main-nav" data-bs-offset="100">
 
-    <!-- CUSTOM CURSOR -->
-    <div id="custom-cursor"></div>
-    <div id="cursor-follower"></div>
+    <!-- A. LOADING OVERLAY -->
+    <div id="loader"><h2 class="fw-bold">INITIALIZING PROFILE...</h2></div>
+    
+    <!-- B. CURSOR -->
+    <div class="cursor cursor-dot"></div>
+    <div class="cursor cursor-circle"></div>
 
-    <div id="app">
-        <!-- NAV -->
-        <nav class="navbar navbar-expand-lg fixed-top d-none d-lg-flex">
+    <!-- C. APP -->
+    <main id="app">
+
+        <!-- 1. NAVIGATION -->
+        <nav id="main-nav" class="navbar navbar-expand-lg d-none d-lg-block">
             <div class="container">
-                <a class="navbar-brand fw-bold cursor-hover" href="#home">JERON.C</a>
-                <div class="d-flex align-items-center gap-4">
-                    <div class="d-flex gap-4">
-                        <a href="#home" class="nav-link fw-bold cursor-hover">Home</a>
-                        <a href="#about" class="nav-link fw-bold cursor-hover">Bio</a>
-                        <a href="#projects" class="nav-link fw-bold cursor-hover">Works</a>
-                    </div>
-                    <a href="mailto:mrcastrojeronluther@gmail.com" class="btn btn-dark rounded-pill px-4 cursor-hover">Email Me</a>
+                <a class="navbar-brand cursor-interact" href="#home">JERON CASTRO<span class="text-secondary">.</span></a>
+                <div class="d-flex align-items-center">
+                    <ul class="navbar-nav me-4">
+                        <li class="nav-item"><a class="nav-link cursor-interact" href="#home">Home</a></li>
+                        <li class="nav-item"><a class="nav-link cursor-interact" href="#about">Bio</a></li>
+                        <li class="nav-item"><a class="nav-link cursor-interact" href="#competencies">Skills</a></li>
+                        <li class="nav-item"><a class="nav-link cursor-interact" href="#projects">Works</a></li>
+                    </ul>
+                    <a href="mailto:mrcastrojeronluther@gmail.com" class="btn btn-dark btn-sm fw-bold px-3 py-2 cursor-interact">GET IN TOUCH</a>
                 </div>
             </div>
         </nav>
 
-        <!-- HERO -->
+        <!-- 2. HERO -->
         <header id="home" class="hero">
             <div id="tsparticles"></div>
-            <div class="container z-1">
-                <div class="reveal">
-                    <span class="badge bg-light text-dark border px-3 py-2 mb-4">AVAILABLE FOR OPPORTUNITIES</span>
-                    <h1 class="hero-title">AI-Augmented <br><span class="text-secondary">Software Developer</span></h1>
-                    <p class="mt-4 fs-5 text-secondary mx-auto" style="max-width: 600px;">
-                        I am Jeron Castro. <br>
-                        <span class="text-dark fw-bold">{{ currentTypedText }}</span><span class="cursor-blink">|</span>
-                    </p>
-                    <div class="d-flex justify-content-center gap-3 mt-5">
-                        <a href="#projects" class="btn btn-dark btn-lg rounded-pill px-5 cursor-hover">View My Logic</a>
-                        <a href="https://github.com/mrjeronluther" target="_blank" class="btn btn-outline-dark btn-lg rounded-pill px-5 cursor-hover">GitHub</a>
-                    </div>
+            <div class="container z-1 reveal">
+                <div class="text-uppercase fw-bold text-secondary mb-3" style="letter-spacing: 2px; font-size: 0.8rem;">
+                    Software Engineer • Manila, PH
+                </div>
+                <h1 class="hero-title">AI-Augmented <br><span style="color: #6b7280;">Developer.</span></h1>
+                <p class="hero-subtitle my-4 text-secondary mx-auto" style="max-width: 600px; font-size: 1.1rem;">
+                    I am Jeron Luther E.S Castro.<br>
+                    <span class="fw-bold text-dark">{{ currentTypedText }}</span><span style="animation: blink 1s infinite">|</span>
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="#projects" class="btn btn-dark fw-bold px-4 py-2 cursor-interact" style="background: var(--text-primary);">View Projects</a>
+                    <a href="https://github.com/mrjeronluther" target="_blank" class="btn btn-outline-dark fw-bold px-4 py-2 cursor-interact">GitHub</a>
                 </div>
             </div>
         </header>
 
-        <!-- ABOUT -->
+        <!-- 3. BIO & EXPERIENCE -->
         <section id="about" class="py-5">
             <div class="container py-5">
-                <div class="row g-5">
-                    <div class="col-lg-5 reveal">
-                        <div class="sticky-top" style="top: 120px;">
-                            <img :src="profileImage" alt="Jeron" class="img-fluid rounded-4 shadow-sm mb-4" @error="handleImageError">
-                            <div class="glass-card p-4">
-                                <h5 class="fw-bold"><i class="fas fa-graduation-cap me-2"></i>Education</h5>
-                                <div class="mb-3 small">
-                                    <strong>Universidad De Manila</strong><br>
-                                    B.I.T Major in Computer Programming (2023)
-                                </div>
-                                <h5 class="fw-bold mt-4 mb-3"><i class="fas fa-certificate me-2"></i>Key Credentials</h5>
-                                <div class="cert-list">
-                                    <div v-for="c in certificates" :key="c.name" class="py-2 border-bottom small d-flex gap-3">
-                                        <span class="text-muted fw-bold" style="min-width: 60px;">{{c.date}}</span>
-                                        <span>{{c.name}}</span>
-                                    </div>
+                <div class="row align-items-start gx-5">
+                    
+                    <!-- Left: Image & Certifications -->
+                    <div class="col-lg-5 mb-5 reveal">
+                        <img :src="profileImage" @error="handleImageError" alt="Jeron Profile" class="profile-pic">
+                        
+                        <div class="mt-4 bg-white border rounded p-4">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-graduation-cap me-2"></i>Education</h5>
+                            <div class="mb-3">
+                                <div class="fw-bold">Universidad De Manila</div>
+                                <div class="small text-muted">B.I.T - BTVTE major in Computer Programming Tech. (2019-2023)</div>
+                            </div>
+                            <div>
+                                <div class="fw-bold">Manuel G. Araullo Highschool</div>
+                                <div class="small text-muted">SHS: STEM (2012-2018)</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 bg-white border rounded p-4">
+                            <h5 class="fw-bold mb-3 border-bottom pb-2 d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-certificate me-2"></i>Certifications</span>
+                                <span class="badge bg-dark text-white rounded-pill" style="font-size:0.7rem">{{ certificates.length }}</span>
+                            </h5>
+                            <!-- Scrollable list of ALL certificates -->
+                            <div class="cert-list">
+                                <div class="cert-item" v-for="(cert, index) in certificates" :key="index">
+                                    <div class="cert-date">{{ cert.date }}</div>
+                                    <div style="line-height: 1.2;">{{ cert.name }}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-7">
-                        <div class="reveal mb-5">
-                            <h6 class="text-uppercase fw-bold text-muted mb-3">Professional Bio</h6>
-                            <h2 class="display-5 fw-bold mb-4">Bridging Intuition <br>& Logic.</h2>
-                            <p class="lead text-secondary">
-                                Specialized in internal tool architecture and process automation. I leverage modern AI to build high-velocity solutions that turn messy data into clear business assets.
-                            </p>
-                        </div>
+                    
+                    <!-- Right: Work History -->
+                    <div class="col-lg-7 reveal" style="transition-delay: 100ms;">
+                        <h6 class="text-uppercase text-secondary fw-bold mb-3">Professional Summary</h6>
+                        <h2 class="mb-4 fw-bold display-6">Architecting Logic.</h2>
+                        <p class="text-secondary mb-5 lead fs-6">
+                            Forward-thinking developer specializing in <strong>AI-Augmented Software Engineering</strong>. I focus on logical architecture and algorithmic problem-solving to rapidly deploy customized full-stack internal web applications and automated workflows with high-velocity execution.
+                        </p>
 
-                        <div v-for="job in experience" :key="job.role" class="timeline-box reveal">
-                            <h4 class="fw-bold mb-1">{{job.role}}</h4>
-                            <div class="text-uppercase fw-bold text-primary small mb-2">{{job.company}} | {{job.date}}</div>
-                            <ul class="text-secondary small">
-                                <li v-for="p in job.points" class="mb-1">{{p}}</li>
+                        <h4 class="fw-bold mb-4 border-bottom pb-2">Work Experience</h4>
+                        <div class="timeline-box" v-for="job in experience" :key="job.role">
+                            <h5 class="fw-bold m-0">{{ job.role }}</h5>
+                            <small class="text-uppercase text-dark fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ job.company }}</small>
+                            <div class="text-muted fw-bold small mb-2">{{ job.date }}</div>
+                            
+                            <ul class="text-secondary small mt-2 ps-3" style="list-style: disc;">
+                                <li v-for="point in job.points" class="mb-1">{{ point }}</li>
                             </ul>
                         </div>
                     </div>
@@ -225,26 +267,62 @@
             </div>
         </section>
 
-        <!-- WORKS -->
-        <section id="projects" class="py-5 bg-dark text-white rounded-5 mx-2 mx-md-4">
+        <!-- 4. COMPETENCIES -->
+        <section id="competencies" class="py-5 bg-white border-top">
             <div class="container py-5">
-                <div class="reveal text-center mb-5">
-                    <h2 class="display-4 fw-bold">Case Studies</h2>
-                    <p class="text-muted">Enterprise solutions and technical prototypes.</p>
+                <div class="section-header reveal">
+                    <h2 class="display-6">Core Competencies</h2>
+                    <p class="text-secondary">Translating vague needs into production-ready logic.</p>
                 </div>
                 
                 <div class="row g-4">
-                    <div class="col-md-6" v-for="(p, i) in projects" :key="i">
-                        <div class="tilt-card reveal bg-light text-dark cursor-hover" :data-tilt="i">
+                    <div class="col-md-6 col-lg-3 reveal cursor-interact" v-for="(comp, i) in competencies" :key="i">
+                        <div class="glass-card d-flex flex-column">
+                            <div class="fs-2 mb-3 text-dark"><i :class="comp.icon"></i></div>
+                            <h6 class="fw-bold">{{ comp.title }}</h6>
+                            <p class="small text-secondary m-0 mt-2 flex-grow-1">{{ comp.desc }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-5 text-center reveal">
+                    <h5 class="fw-bold mb-3">Technical Stack</h5>
+                    <div class="d-flex justify-content-center flex-wrap gap-2">
+                        <span class="badge bg-light text-dark border p-2" v-for="skill in skills" style="font-size: 0.9rem;">
+                            <i class="fas fa-check-circle me-1 text-success"></i> {{ skill }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. PROJECTS -->
+        <section id="projects" class="py-5">
+            <div class="container py-5">
+                <div class="section-header reveal">
+                    <h2 class="display-6">Selected Works</h2>
+                    <p class="text-secondary">Enterprise Internal Tools & Systems.</p>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6" v-for="(project, i) in projects" :key="i">
+                        <div class="tilt-card reveal cursor-interact">
                             <div class="img-container">
-                                <img :src="p.image" :alt="p.title">
+                                <img :src="project.image" alt="Thumbnail">
                             </div>
-                            <div class="p-4">
-                                <span class="badge bg-dark rounded-pill mb-2">{{p.type}}</span>
-                                <h4 class="fw-bold">{{p.title}}</h4>
-                                <p class="small text-muted mb-3">{{p.desc}}</p>
-                                <div class="d-flex flex-wrap gap-1">
-                                    <span v-for="t in p.tags" class="badge border text-dark">{{t}}</span>
+                            <div class="p-4 d-flex flex-column h-100">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="fw-bold mb-1">{{ project.title }}</h5>
+                                    <span class="badge bg-dark text-white" style="font-size: 0.6rem;">{{ project.type }}</span>
+                                </div>
+                                <hr>
+                                <p class="text-secondary small mb-3 flex-grow-1">{{ project.desc }}</p>
+                                
+                                <div class="mt-auto">
+                                    <div class="mb-3">
+                                        <span class="badge bg-light text-secondary border me-1" v-for="tag in project.tags">{{ tag }}</span>
+                                    </div>
+                                    <div v-if="project.is_group" class="small text-muted mb-2 fst-italic">Includes: {{ project.sub_projects }}</div>
                                 </div>
                             </div>
                         </div>
@@ -253,115 +331,236 @@
             </div>
         </section>
 
-        <!-- FOOTER -->
-        <footer class="py-5 text-center">
-            <div class="container reveal">
-                <hr class="mb-5 opacity-10">
-                <h3 class="fw-bold mb-4">Let's Build Faster.</h3>
-                <div class="d-flex justify-content-center gap-4 fs-3 mb-5">
-                    <a href="https://github.com/mrjeronluther" target="_blank" class="text-dark cursor-hover"><i class="fab fa-github"></i></a>
-                    <a href="mailto:mrcastrojeronluther@gmail.com" class="text-dark cursor-hover"><i class="fas fa-envelope"></i></a>
+        <!-- 6. FOOTER -->
+        <footer class="py-5 bg-dark text-white text-center">
+            <div class="container">
+                <h4 class="fw-bold ls-2 mb-1">JERON LUTHER E.S CASTRO</h4>
+                <p class="text-secondary small mb-4">Malate, Manila | 0995-595-0115</p>
+                
+                <div class="d-flex justify-content-center gap-4 mb-4">
+                    <a href="https://github.com/mrjeronluther" target="_blank" class="text-white opacity-75 hover-white"><i class="fab fa-github fa-2x"></i></a>
+                    <a href="mailto:mrcastrojeronluther@gmail.com" class="text-white opacity-75 hover-white"><i class="fas fa-envelope fa-2x"></i></a>
                 </div>
-                <p class="text-muted small">&copy; 2024 Jeron Castro • Built with Vue 3 & Lenis</p>
+                
+                <hr class="mx-auto" style="width: 50px; border-color: gray;">
+                <small class="text-secondary">&copy; 2026. Built with Vue 3.</small>
             </div>
         </footer>
 
-        <!-- MOBILE NAVIGATION -->
-        <div class="mobile-nav d-lg-none">
-            <a href="#home"><i class="fas fa-home"></i></a>
-            <a href="#about"><i class="fas fa-user-circle"></i></a>
-            <a href="#projects"><i class="fas fa-briefcase"></i></a>
-            <a href="mailto:mrcastrojeronluther@gmail.com"><i class="fas fa-paper-plane"></i></a>
-        </div>
-    </div>
+        <!-- MOBILE BOTTOM NAV -->
+        <nav class="mobile-nav d-lg-none">
+            <div class="mobile-nav-inner">
+                <a href="#home" class="mobile-nav-item active"><i class="fas fa-home"></i></a>
+                <a href="#about" class="mobile-nav-item"><i class="fas fa-user-tie"></i></a>
+                <a href="#projects" class="mobile-nav-item"><i class="fas fa-layer-group"></i></a>
+                <a href="mailto:mrcastrojeronluther@gmail.com" class="mobile-nav-item"><i class="fas fa-envelope"></i></a>
+            </div>
+        </nav>
+
+    </main>
 
     <!-- SCRIPTS -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.12.0/tsparticles.slim.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- APP LOGIC -->
     <script>
         const app = Vue.createApp({
             data() {
                 return {
-                    profileImage: 'https://raw.githubusercontent.com/mrjeronluther/My-E-Portfolio/2d04d94f2920a26a915bfe6b9e5ee1823a4f2290/profilepic.png',
-                    typedTexts: ["I architect full-stack tools.", "I automate complex workflows.", "I streamline data lifecycles."],
+                    // IMAGE
+                    profileImage: 'C:\\Users\\Acer\\Pictures\\Screenshots\\profilepic.png',
+
+                    // TYPEWRITER
+                    typedTextOptions: [
+                        "I architect full-stack tools.", 
+                        "I automate complex workflows.", 
+                        "I streamline data lifecycles."
+                    ],
                     currentTypedText: '',
-                    typeIdx: 0, charIdx: 0, isDeleting: false,
+                    charIndex: 0, 
+                    typeOptionIndex: 0, 
+                    isDeleting: false,
+
+                    // WORK HISTORY
                     experience: [
-                        { role: 'Data Management Associate', company: 'Megaworld (Luxury Global Malls)', date: 'Nov 2023 - Present', points: ["Built custom CRM tools using Vue.js & Google Apps Script.","Optimized workflows using AI-Prompt Engineering.","40% reduction in reporting lead times."] },
-                        { role: 'Technical Support', company: 'UDM Registrar', date: '2022-2023', points: ["Administered record systems for students."] }
+                        { 
+                            role: 'Data Management Associate', 
+                            company: 'Luxury Global Malls (Megaworld)', 
+                            date: 'Nov 2023 - Present', 
+                            points: [
+                                "Architected full-stack internal web apps using Vue.js 3, HTML5, & Apps Script.",
+                                "Leveraged AI-Driven Development for a 40% reduction in time-to-market.",
+                                "Automated data workflows streamlining operations across multiple groups.",
+                                "Technical Consultant for Google Sheets databases and logic-first architecture."
+                            ]
+                        },
+                        { 
+                            role: 'Technical Support (OJT)', 
+                            company: 'Universidad De Manila (Registrar)', 
+                            date: 'May 2022 - July 2023', 
+                            points: [
+                                "Provided technical support to clerks in record management.",
+                                "Handled university technical processes and hardware issues."
+                            ]
+                        },
+                        { 
+                            role: 'IT Support (OJT)', 
+                            company: 'DPWH North District', 
+                            date: 'October 2018', 
+                            points: [
+                                "Collaborated on network cable wiring and hardware installation.",
+                                "Physical hardware maintenance projects."
+                            ]
+                        }
                     ],
+                    
+                    // ALL CERTIFICATES
                     certificates: [
-                        {date: '2023', name: 'Java Programming (TESDA)'},
-                        {date: '2022', name: 'Web Dev Mastery (DICT)'},
-                        {date: '2022', name: 'Frontend Tech (Pateros)'}
+                        { date: "Oct 2023", name: "Java Programming (TESDA)" },
+                        { date: "Mar 2022", name: "Cyber Security Awareness: Phishing & Scamming (DICT)" },
+                        { date: "Feb 2022", name: "Data Mgmt: Naming Convention & Hierarchy (DICT)" },
+                        { date: "Feb 2022", name: "Strengthening Research via Data Analytics (UDM)" },
+                        { date: "Feb 2022", name: "WebTech Conference 2022 (TUP)" },
+                        { date: "Feb 2022", name: "Introduction to Programming (TUP)" },
+                        { date: "Feb 2022", name: "IT Excellence: Data Science (Pateros Tech College)" },
+                        { date: "Feb 2022", name: "IT Excellence: Fraud & Risk Management (Pateros)" },
+                        { date: "Feb 2022", name: "IT Excellence: Frontend Dev w/ Javascript (Pateros)" },
+                        { date: "Feb 2022", name: "Work Smarter Using Tech to Your Advantage (ReSkills)" },
+                        { date: "May 2019", name: "Creative Web Design Level I (TESDA)" }
                     ],
+
+                    // COMPETENCIES
+                    competencies: [
+                        { title: 'Internal Consultant', icon: 'fas fa-briefcase', desc: 'Acting as "go-to" technical resource for cross-functional groups to resolve bottlenecks.' },
+                        { title: 'Systems Architect', icon: 'fas fa-sitemap', desc: 'Translating vague departmental needs into structured, production-ready digital workflows.' },
+                        { title: 'Rapid Prototyping', icon: 'fas fa-rocket', desc: 'Delivering functional MVPs quickly by leveraging AI-Augmented workflows (Few-Shot / Chain of Thought).' },
+                        { title: 'Technical Mentorship', icon: 'fas fa-chalkboard-user', desc: 'Upskilling coworkers in data processing and Google Workspace ecosystems.' },
+                        { title: 'Adaptive Solving', icon: 'fas fa-lightbulb', desc: 'Navigating complex "grey area" technical issues with creative logic and modern AI.' },
+                        { title: 'Operational Excellence', icon: 'fas fa-chart-line', desc: 'Optimizing legacy processes to increase departmental speed and accuracy.' },
+                        { title: 'Cross-Dept Collab', icon: 'fas fa-handshake', desc: 'Bridging the gap between technical possibilities and non-technical group requirements.' }
+                    ],
+
+                    // SKILLS
+                    skills: [
+                        "Vue.js 3", "HTML5 & Bootstrap 5", "Google Apps Script", "JavaScript", 
+                        "AI Prompt Engineering", "Logic-First Dev", "MySQL & Workbench", 
+                        "Python/PHP/Java", "Github/VSCode", "Google AI Studio"
+                    ],
+
+                    // PROJECTS
                     projects: [
-                        { title: 'Ops Ecosystem', type: 'SaaS / ERP', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500', desc: 'Centralized dashboard for document routing and policy management.', tags: ['Vue 3', 'Apps Script', 'Automation'] },
-                        { title: 'Hydraulic AI Segregator', type: 'Robotics', image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=500', desc: 'Hardware-based recycling machine with intelligent sensor arrays.', tags: ['C++', 'Arduino'] }
+                        { 
+                            title: 'MCD Operations Ecosystem', 
+                            type: 'Enterprise Suite', 
+                            image: 'https://placehold.co/600x400/e5e7eb/111827?text=Ops+Ecosystem', 
+                            desc: 'A comprehensive suite of web-based internal tools architected for Departmental Operations. Includes automated routing and policy libraries.',
+                            tags: ['Vue.js', 'Google Apps Script', 'Web-Based'],
+                            is_group: true,
+                            sub_projects: "Document Routing, Ops Checklist, Policy Library, Billing Systems, NOA Validation, Manpower Contract Finder."
+                        },
+                        { 
+                            title: 'COGDevs Web Chat', 
+                            type: 'AI Project', 
+                            image: 'https://placehold.co/600x400/e5e7eb/111827?text=AI+Chat', 
+                            desc: 'Intelligent web chat interface powered by Google AI integration.',
+                            tags: ['JavaScript', 'Google AI', 'API'],
+                            is_group: false
+                        },
+                        { 
+                            title: 'Smart Hydraulic Segregator', 
+                            type: 'Hardware Capstone', 
+                            image: 'https://placehold.co/600x400/e5e7eb/111827?text=Hardware+AI', 
+                            desc: 'Arduino-based machine that flattens trash and detects metallic vs non-metallic bottles with auto-segregation.',
+                            tags: ['C++', 'Arduino', 'Sensors'],
+                            is_group: false
+                        },
+                        { 
+                            title: 'Student Mgmt. System', 
+                            type: 'Desktop App', 
+                            image: 'https://placehold.co/600x400/e5e7eb/111827?text=Java+App', 
+                            desc: 'Robust desktop application for managing student records and data.',
+                            tags: ['Java Swing', 'MySQL', 'Desktop'],
+                            is_group: false
+                        }
                     ]
                 }
             },
             methods: {
-                handleImageError(e) { e.target.src = 'https://ui-avatars.com/api/?name=Jeron+Castro&background=0f172a&color=fff&size=512'; },
-                typeEffect() {
-                    const current = this.typedTexts[this.typeIdx];
-                    this.currentTypedText = this.isDeleting ? current.substring(0, this.charIdx--) : current.substring(0, this.charIdx++);
-                    let speed = this.isDeleting ? 50 : 100;
-                    if (!this.isDeleting && this.charIdx === current.length + 1) { this.isDeleting = true; speed = 2000; }
-                    else if (this.isDeleting && this.charIdx === 0) { this.isDeleting = false; this.typeIdx = (this.typeIdx + 1) % this.typedTexts.length; speed = 500; }
-                    setTimeout(this.typeEffect, speed);
+                handleImageError(e) {
+                    console.warn("Local image block. Switching to Avatar.");
+                    e.target.src = "https://ui-avatars.com/api/?name=Jeron+Castro&background=111827&color=fff&size=512";
                 },
-                initCursor() {
-                    const dot = document.getElementById('custom-cursor');
-                    const fol = document.getElementById('cursor-follower');
-                    window.addEventListener('mousemove', (e) => {
-                        dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-                        fol.style.transform = `translate(${e.clientX - 14}px, ${e.clientY - 14}px)`;
-                    });
-                    document.querySelectorAll('.cursor-hover').forEach(el => {
-                        el.addEventListener('mouseenter', () => { fol.style.width = '70px'; fol.style.height = '70px'; fol.style.top = '-15px'; fol.style.left = '-15px'; fol.style.background = 'rgba(0,0,0,0.03)'; });
-                        el.addEventListener('mouseleave', () => { fol.style.width = '40px'; fol.style.height = '40px'; fol.style.top = '0'; fol.style.left = '0'; fol.style.background = 'transparent'; });
-                    });
+                typeWriter() {
+                    const current = this.typedTextOptions[this.typeOptionIndex];
+                    this.currentTypedText = this.isDeleting 
+                        ? current.substring(0, this.charIndex - 1) 
+                        : current.substring(0, this.charIndex + 1);
+                    this.charIndex += this.isDeleting ? -1 : 1;
+
+                    let speed = this.isDeleting ? 40 : 80;
+                    if (!this.isDeleting && this.charIndex === current.length) { speed = 2000; this.isDeleting = true; }
+                    else if (this.isDeleting && this.charIndex === 0) { this.isDeleting = false; this.typeOptionIndex = (this.typeOptionIndex + 1) % this.typedTextOptions.length; speed = 500; }
+                    
+                    setTimeout(this.typeWriter, speed);
                 }
             },
             mounted() {
-                this.typeEffect();
-                this.initCursor();
+                this.typeWriter();
 
-                // 1. LENIS SMOOTH SCROLL (The magic)
-                const lenis = new Lenis();
-                function raf(time) {
-                    lenis.raf(time);
-                    requestAnimationFrame(raf);
+                if(window.tsParticles){
+                    tsParticles.load("tsparticles", {
+                        fpsLimit: 60,
+                        particles: {
+                            number: { value: 90, density: { enable: true, value_area: 800 } },
+                            color: { value: "#111827" }, 
+                            opacity: { value: 0.65 },
+                            size: { value: 3.5, random: true },
+                            move: { enable: true, speed: 0.8 },
+                            links: { enable: true, color: "#111827", opacity: 0.45, width: 1.5, distance: 160 }
+                        },
+                        interactivity: {
+                            events: { onhover: { enable: true, mode: "grab" } },
+                            modes: { grab: { distance: 180, line_linked: { opacity: 0.8 } } }
+                        }
+                    });
                 }
-                requestAnimationFrame(raf);
 
-                // 2. PARTICLES
-                tsParticles.load("tsparticles", {
-                    particles: {
-                        number: { value: 60 },
-                        color: { value: "#64748b" },
-                        links: { enable: true, color: "#cbd5e1", distance: 150, opacity: 0.4 },
-                        move: { enable: true, speed: 0.5 }
-                    }
-                });
-
-                // 3. REVEAL OBSERVER
-                const obs = new IntersectionObserver(entries => {
-                    entries.forEach(en => { if(en.isIntersecting) en.target.classList.add('active'); });
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
                 }, { threshold: 0.1 });
-                document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-                // 4. NAV SCROLL
-                window.addEventListener('scroll', () => {
-                    document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 50);
-                });
-
-                // HIDE LOADER
-                setTimeout(() => document.getElementById('loader').style.opacity = '0', 800);
-                setTimeout(() => document.getElementById('loader').style.display = 'none', 1600);
+                // FIXED CURSOR ALIGNMENT LOGIC
+                if (window.matchMedia("(pointer: fine)").matches) {
+                    const dot = document.querySelector('.cursor-dot');
+                    const circle = document.querySelector('.cursor-circle');
+                    
+                    window.addEventListener('mousemove', e => {
+                        // INCLUDE "translate(-50%, -50%)" IN THE JS TRANSFORMATION
+                        dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+                        
+                        circle.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%) scale(${document.body.classList.contains('cursor-interact') ? 1.5 : 0.5})`;
+                    });
+                    
+                    document.querySelectorAll('a, button, .cursor-interact').forEach(el => {
+                        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-interact'));
+                        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-interact'));
+                    });
+                    
+                    document.querySelectorAll('.tilt-card').forEach(c => {
+                        c.addEventListener('mousemove', e => {
+                            const r = c.getBoundingClientRect();
+                            const x = e.clientX - r.left - r.width/2;
+                            const y = e.clientY - r.top - r.height/2;
+                            c.style.transform = `perspective(1000px) rotateX(${-y/20}deg) rotateY(${x/20}deg) scale(1.02)`;
+                        });
+                        c.addEventListener('mouseleave', () => c.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`);
+                    });
+                }
+                
+                setTimeout(() => document.getElementById('loader').classList.add('hidden'), 800);
             }
         }).mount('#app');
     </script>
