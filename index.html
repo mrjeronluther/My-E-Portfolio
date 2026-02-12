@@ -243,23 +243,82 @@
                 color: var(--text-primary);
             }
 
-            /* Glass Cards */
-            .glass-card {
-                background: #fff;
-                border: 1px solid #e5e7eb;
-                border-radius: var(--border-radius);
-                padding: 1.5rem;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-                height: 100%;
-                transition:
-                    transform 0.3s ease,
-                    box-shadow 0.3s ease;
-            }
-            .glass-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
-                border-color: #d1d5db;
-            }
+            /* --- ENHANCED COMPETENCY CARDS --- */
+.competency-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.competency-card:hover {
+    transform: translateY(-10px);
+    background: #fff;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    border-color: var(--text-primary);
+}
+
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
+    background: #f3f4f6;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    transition: 0.3s;
+    font-size: 1.25rem;
+}
+
+.competency-card:hover .icon-wrapper {
+    background: var(--text-primary);
+    color: white;
+}
+
+/* --- MODERN TECH STACK TILES --- */
+.tech-group-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.skill-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 6px 12px;
+    margin: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.skill-chip i {
+    margin-right: 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.skill-chip:hover {
+    background: var(--text-primary);
+    color: white;
+    transform: translateY(-2px);
+    border-color: var(--text-primary);
+}
+
+.skill-chip:hover i {
+    color: white;
+}
 
             .tilt-card {
                 background: #fff;
@@ -533,41 +592,51 @@
             </section>
 
             <!-- 4. COMPETENCIES -->
-            <section id="competencies" class="py-5 bg-white border-top">
-                <div class="container py-5">
-                    <div class="section-header reveal">
-                        <h2 class="display-6">Core Competencies</h2>
-                        <p class="text-secondary">Translating vague needs into production-ready logic.</p>
-                    </div>
+           <!-- 4. COMPETENCIES -->
+<section id="competencies" class="py-5 bg-white border-top">
+    <div class="container py-5">
+        <div class="section-header reveal">
+            <h2 class="display-6">Core Competencies</h2>
+            <p class="text-secondary">Translating vague needs into production-ready logic.</p>
+        </div>
 
-                    <div class="row g-4">
-                        <div
-                            class="col-md-6 col-lg-3 reveal cursor-interact"
-                            v-for="(comp, i) in competencies"
-                            :key="i"
-                        >
-                            <div class="glass-card d-flex flex-column">
-                                <div class="fs-2 mb-3 text-dark"><i :class="comp.icon"></i></div>
-                                <h6 class="fw-bold">{{ comp.title }}</h6>
-                                <p class="small text-secondary m-0 mt-2 flex-grow-1">{{ comp.desc }}</p>
+        <!-- Enhanced Competency Grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 col-lg-3 reveal cursor-interact" v-for="(comp, i) in competencies" :key="i">
+                <div class="competency-card">
+                    <div class="icon-wrapper">
+                        <i :class="comp.icon"></i>
+                    </div>
+                    <h6 class="fw-bold">{{ comp.title }}</h6>
+                    <p class="small text-secondary m-0 mt-2">{{ comp.desc }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grouped Technical Stack -->
+        <div class="mt-5 reveal">
+            <div class="text-center mb-5">
+                <h3 class="fw-bold">Technical Stack</h3>
+                <p class="text-muted">Tools and languages I use to architect solutions</p>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Loop through organized categories in Vue data -->
+                <div class="col-lg-4" v-for="(group, title) in organizedSkills" :key="title">
+                    <div class="tech-group-card h-100">
+                        <h6 class="text-uppercase fw-bold small mb-3 pb-2 border-bottom">{{ title }}</h6>
+                        <div class="d-flex flex-wrap">
+                            <div class="skill-chip cursor-interact" v-for="skill in group" :key="skill.name">
+                                <i :class="skill.icon"></i>
+                                {{ skill.name }}
                             </div>
                         </div>
                     </div>
-
-                    <div class="mt-5 text-center reveal">
-                        <h5 class="fw-bold mb-3">Technical Stack</h5>
-                        <div class="d-flex justify-content-center flex-wrap gap-2">
-                            <span
-                                class="badge bg-light text-dark border p-2"
-                                v-for="skill in skills"
-                                style="font-size: 0.9rem"
-                            >
-                                <i class="fas fa-check-circle me-1 text-success"></i> {{ skill }}
-                            </span>
-                        </div>
-                    </div>
                 </div>
-            </section>
+            </div>
+        </div>
+    </div>
+</section>
 
             <!-- 5. PROJECTS -->
             <section id="projects" class="py-5">
@@ -763,18 +832,26 @@
                         ],
 
                         // SKILLS
-                        skills: [
-                            "Vue.js 3",
-                            "HTML5 & Bootstrap 5",
-                            "Google Apps Script",
-                            "JavaScript",
-                            "AI Prompt Engineering",
-                            "Logic-First Dev",
-                            "MySQL & Workbench",
-                            "Python/PHP/Java",
-                            "Github/VSCode",
-                            "Google AI Studio",
-                        ],
+                        organizedSkills: {
+            "Frontend & UI": [
+                { name: "Vue.js 3", icon: "fab fa-vuejs" },
+                { name: "JavaScript", icon: "fab fa-js" },
+                { name: "Bootstrap 5", icon: "fab fa-bootstrap" },
+                { name: "HTML5/CSS3", icon: "fab fa-html5" }
+            ],
+            "Automation & Backend": [
+                { name: "Apps Script", icon: "fas fa-code" },
+                { name: "Python", icon: "fab fa-python" },
+                { name: "Java/PHP", icon: "fas fa-terminal" },
+                { name: "MySQL", icon: "fas fa-database" }
+            ],
+            "AI & Workflow": [
+                { name: "AI Prompting", icon: "fas fa-brain" },
+                { name: "Logic-First Dev", icon: "fas fa-microchip" },
+                { name: "Github", icon: "fab fa-github" },
+                { name: "VSCode", icon: "fas fa-keyboard" }
+            ]
+        },
 
                         // PROJECTS
                         projects: [
