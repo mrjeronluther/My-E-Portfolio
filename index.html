@@ -1,677 +1,267 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <!-- METADATA & SEO -->
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Portfolio of Jeron Luther E.S Castro - AI-Augmented Software Engineer." />
-        <meta name="author" content="Jeron Luther E.S Castro" />
-        <title>Jeron Luther E.S Castro | AI-Augmented Engineer</title>
+        <title>Jeron Castro | Business Systems Developer</title>
 
         <!-- EXTERNAL RESOURCES -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
-            rel="stylesheet"
-        />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-        <!-- CORE STYLESHEET -->
         <style>
-            /* --- 1. ROOT VARIABLES --- */
             :root {
                 --bg-body: #f3f4f6;
                 --bg-card: #ffffff;
-                --text-primary: #111827; /* Gunmetal Black */
-                --text-secondary: #4b5563; /* Medium Gray */
+                --text-primary: #111827; 
+                --text-secondary: #4b5563; 
                 --accent: #111827;
-
                 --navbar-height: 80px;
                 --mobile-nav-height: 70px;
-                --border-radius: 8px;
             }
 
-            /* --- 2. BASE --- */
-            html {
-                scroll-behavior: smooth;
-            }
+            html { scroll-behavior: smooth; }
             body {
                 font-family: "Plus Jakarta Sans", sans-serif;
                 background-color: var(--bg-body);
                 color: var(--text-primary);
                 overflow-x: hidden;
-                background-image: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
                 padding-top: var(--navbar-height);
                 padding-bottom: var(--mobile-nav-height);
-                /* Hide the default cursor so only custom one shows */
-                cursor: none;
+                cursor: none; /* Custom cursor */
             }
 
-            /* Re-enable cursor for mobile or small screens */
-            @media (min-width: 992px) {
-                body {
-                    padding-bottom: 0;
-                }
-            }
-            @media (pointer: coarse) {
-                body {
-                    cursor: auto;
-                }
-            }
+            @media (min-width: 992px) { body { padding-bottom: 0; } }
+            @media (pointer: coarse) { body { cursor: auto; } }
+            a, button, input { cursor: none; }
 
-            a,
-            button,
-            input {
-                cursor: none;
-            } /* Ensure interactive elements use custom cursor too */
-
-            a {
-                text-decoration: none;
-                color: inherit;
-                transition: all 0.2s ease;
-            }
-            ul {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
-
-            /* --- 3. UI COMPONENTS --- */
-
-            /* Loader */
-            #loader {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                background-color: #fff;
-                z-index: 99999;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                transition:
-                    opacity 0.5s ease-out,
-                    visibility 0.5s ease-out;
-                cursor: auto;
-            }
-            #loader.hidden {
-                opacity: 0;
-                visibility: hidden;
-                pointer-events: none;
-            }
-
-            /* Cursor Styling */
-            .cursor {
-                position: fixed;
-                top: 0;
-                left: 0;
-                z-index: 10000;
-                pointer-events: none;
-            }
-
-            .cursor-dot {
-                width: 8px;
-                height: 8px;
-                background: var(--accent);
-                border-radius: 50%;
-                /* Will be positioned via JS */
-            }
-
+            /* Cursor */
+            .cursor { position: fixed; top: 0; left: 0; z-index: 10000; pointer-events: none; }
+            .cursor-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
             .cursor-circle {
-                width: 40px;
-                height: 40px;
-                border: 1px solid rgba(17, 24, 39, 0.4);
-                border-radius: 50%;
-                transition:
-                    width 0.3s,
-                    height 0.3s,
-                    background-color 0.3s,
-                    border-color 0.3s;
+                width: 40px; height: 40px; border: 1px solid rgba(17, 24, 39, 0.4);
+                border-radius: 50%; transition: width 0.3s, height 0.3s, background-color 0.3s;
                 mix-blend-mode: multiply;
             }
 
-            @media (pointer: coarse) {
-                .cursor {
-                    display: none !important;
-                }
+            /* Loader */
+            #loader {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+                background-color: #fff; z-index: 99999;
+                display: flex; justify-content: center; align-items: center;
+                transition: opacity 0.5s ease-out;
             }
+            #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
             /* Navigation */
             .navbar {
-                position: fixed !important;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: var(--navbar-height);
-                background-color: rgba(255, 255, 255, 0.98);
-                backdrop-filter: blur(15px);
-                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-                z-index: 1030;
-                padding: 0;
-                transition: none !important;
-                display: flex;
-                align-items: center;
-                cursor: none; /* Inherit none */
+                position: fixed !important; top: 0; left: 0; right: 0; height: var(--navbar-height);
+                background-color: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05); z-index: 1030;
             }
-            .navbar .container {
-                display: flex;
-                align-items: center;
-                height: 100%;
-            }
-            .navbar-brand {
-                font-weight: 800;
-                font-size: 1.5rem;
-                color: var(--text-primary);
-                letter-spacing: -1px;
-                margin: 0;
-            }
-            .nav-link {
-                font-weight: 600;
-                color: var(--text-secondary);
-                margin: 0 1rem;
-                font-size: 0.9rem;
-            }
-            .nav-link:hover,
-            .nav-link.active {
-                color: var(--text-primary) !important;
-            }
-
-            /* Mobile Nav */
-            .mobile-nav {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                height: var(--mobile-nav-height);
-                background: rgba(255, 255, 255, 0.95);
-                border-top: 1px solid #e5e7eb;
-                backdrop-filter: blur(10px);
-                z-index: 1030;
-            }
-            .mobile-nav-inner {
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-                width: 100%;
-            }
-            .mobile-nav-item {
-                font-size: 1.2rem;
-                color: var(--text-secondary);
-                opacity: 0.7;
-            }
-            .mobile-nav-item.active {
-                color: var(--text-primary);
-                transform: translateY(-3px);
-                opacity: 1;
-            }
-
-            /* --- 4. SECTIONS --- */
+            .navbar-brand { font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; }
+            .nav-link { font-weight: 600; color: var(--text-secondary); margin: 0 1rem; font-size: 0.9rem; }
+            
+            /* Hero Section */
             .hero {
-                position: relative;
-                /* Desktop: Total height minus top navbar */
-                min-height: calc(100vh - var(--navbar-height));
-                display: flex;
-                flex-direction: column; /* Ensures vertical alignment */
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                padding: 2rem 0; /* Optional: prevents text from touching edges on small screens */
+                position: relative; min-height: calc(100vh - var(--navbar-height));
+                display: flex; flex-direction: column; align-items: center;
+                justify-content: center; text-align: center;
             }
+            #tsparticles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+            .hero-title { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; }
 
-            /* Adjust for Mobile: Account for both top padding AND bottom nav height */
-            @media (max-width: 991px) {
-                .hero {
-                    min-height: calc(100vh - var(--navbar-height) - var(--mobile-nav-height));
-                }
-            }
-            #tsparticles {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: -1;
-            }
-
-            .hero-title {
-                font-size: clamp(2.2rem, 6vw, 4.5rem);
-                font-weight: 800;
-                line-height: 1.1;
-                margin-bottom: 1rem;
-                color: var(--text-primary);
-            }
-
-            /* --- ENHANCED COMPETENCY CARDS --- */
-.competency-card {
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 2rem 1.5rem;
-    height: 100%;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    overflow: hidden;
-}
-
-.competency-card:hover {
-    transform: translateY(-10px);
-    background: #fff;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    border-color: var(--text-primary);
-}
-
-.icon-wrapper {
-    width: 50px;
-    height: 50px;
-    background: #f3f4f6;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-    transition: 0.3s;
-    font-size: 1.25rem;
-}
-
-.competency-card:hover .icon-wrapper {
-    background: var(--text-primary);
-    color: white;
-}
-
-/* --- MODERN TECH STACK TILES --- */
-.tech-group-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1.5rem;
-}
-
-.skill-chip {
-    display: inline-flex;
-    align-items: center;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    padding: 6px 12px;
-    margin: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    transition: all 0.2s;
-}
-
-.skill-chip i {
-    margin-right: 8px;
-    font-size: 1rem;
-    color: var(--text-primary);
-}
-
-.skill-chip:hover {
-    background: var(--text-primary);
-    color: white;
-    transform: translateY(-2px);
-    border-color: var(--text-primary);
-}
-
-.skill-chip:hover i {
-    color: white;
-}
-
-            .tilt-card {
-                background: #fff;
-                border: 1px solid #e5e7eb;
-                border-radius: var(--border-radius);
-                transform-style: preserve-3d;
-                overflow: hidden;
-                height: 100%;
-                transition: transform 0.1s ease-out;
-            }
-            .tilt-card .img-container {
-                height: 180px;
-                overflow: hidden;
-                border-bottom: 1px solid #e5e7eb;
-                background: #f8f9fa;
-            }
-            .tilt-card img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: transform 0.4s;
-            }
-            .tilt-card:hover img {
-                transform: scale(1.1);
-            }
-
-            .reveal {
-                opacity: 0;
-                transform: translateY(30px);
-                transition: 0.8s cubic-bezier(0.5, 0, 0, 1);
-            }
-            .reveal.active {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            /* Bio Styles */
-            .timeline-box {
-                border-left: 2px solid #e5e7eb;
-                padding-left: 20px;
-                padding-bottom: 40px;
-                position: relative;
-            }
-            .timeline-box::before {
-                content: "";
-                width: 12px;
-                height: 12px;
-                background: var(--text-primary);
-                border-radius: 50%;
-                position: absolute;
-                left: -7px;
-                top: 5px;
-            }
-
-            .profile-pic {
-                width: 100%;
-                border-radius: 8px;
-                box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.1);
-                filter: grayscale(100%);
-                transition: 0.5s;
-            }
-            .profile-pic:hover {
-                filter: grayscale(0%);
-                box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.2);
-            }
-
-            .section-header {
-                margin-bottom: 3rem;
-                text-align: center;
-            }
-            .section-header h2 {
-                font-weight: 800;
-                letter-spacing: -0.5px;
-            }
-
-            /* Cert List */
-            .cert-list {
-                max-height: 450px;
-                overflow-y: auto;
-                padding-right: 5px;
-            }
-            .cert-list::-webkit-scrollbar {
-                width: 4px;
-            }
-            .cert-list::-webkit-scrollbar-thumb {
-                background: #d1d5db;
-                border-radius: 4px;
-            }
-            .cert-item {
-                font-size: 0.8rem;
-                padding: 12px 0;
-                border-bottom: 1px solid #f3f4f6;
-                display: flex;
-                align-items: start;
-            }
-            .cert-item:last-child {
-                border-bottom: none;
-            }
-            .cert-date {
-                font-weight: 800;
-                color: var(--text-secondary);
-                min-width: 80px;
-                font-size: 0.75rem;
-                display: block;
-            }
-            /* --- Glassmorphism Panel --- */
+            /* Bio & Experience */
             .glass-panel {
-                background: rgba(255, 255, 255, 0.4); /* Subtle white transparency */
-                backdrop-filter: blur(12px); /* The frosted glass effect */
-                -webkit-backdrop-filter: blur(12px); /* Safari Support */
-                border: 1px solid rgba(255, 255, 255, 0.5); /* Soft border for edge definition */
-                border-radius: 16px; /* Slightly more rounded than small buttons */
-                padding: 3.5rem;
-                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05); /* Very soft shadow */
+                background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 20px;
+                padding: 3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            }
+            .profile-pic {
+                width: 100%; border-radius: 12px;
+                /* NO Grayscale - Always Color as requested */
+                box-shadow: 12px 12px 0px var(--text-primary);
+                transition: 0.3s;
+            }
+            .timeline-box { border-left: 2px solid #e5e7eb; padding-left: 20px; padding-bottom: 30px; position: relative; }
+            .timeline-box::before {
+                content: ""; width: 12px; height: 12px; background: var(--text-primary);
+                border-radius: 50%; position: absolute; left: -7px; top: 5px;
             }
 
-            /* Fix for mobile padding inside the glass panel */
-            @media (max-width: 768px) {
-                .glass-panel {
-                    padding: 1.5rem;
-                }
+            /* Skill Chips */
+            .skill-chip {
+                display: inline-flex; align-items: center; background: #fff;
+                border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 14px;
+                margin: 5px; font-size: 0.85rem; font-weight: 600; transition: 0.2s;
             }
+            .skill-chip:hover { background: var(--text-primary); color: white; transform: translateY(-3px); }
+
+            /* Project Cards */
+            .project-card {
+                background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
+                overflow: hidden; height: 100%; transition: 0.3s;
+            }
+            .project-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: var(--text-primary); }
+            .project-header { background: #111827; padding: 1.5rem; color: white; text-align: center; }
+
+            .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s cubic-bezier(0.5, 0, 0, 1); }
+            .reveal.active { opacity: 1; transform: translateY(0); }
+
+            .mobile-nav {
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
+                height: var(--mobile-nav-height); background: #fff;
+                border-top: 1px solid #e5e7eb; z-index: 1030;
+            }
+            .mobile-nav-inner { display: flex; justify-content: space-around; align-items: center; width: 100%; }
         </style>
     </head>
 
-    <body data-bs-spy="scroll" data-bs-target="#main-nav" data-bs-offset="100">
-        <!-- A. LOADING OVERLAY -->
-        <div id="loader"><h2 class="fw-bold">INITIALIZING PROFILE...</h2></div>
+    <body data-bs-spy="scroll" data-bs-target="#main-nav">
+        <div id="loader"><h2 class="fw-bold">LOADING PORTFOLIO...</h2></div>
 
-        <!-- B. CURSOR -->
         <div class="cursor cursor-dot"></div>
         <div class="cursor cursor-circle"></div>
 
-        <!-- C. APP -->
         <main id="app">
-            <!-- 1. NAVIGATION -->
+            <!-- NAV -->
             <nav id="main-nav" class="navbar navbar-expand-lg d-none d-lg-block">
                 <div class="container">
-                    <a class="navbar-brand cursor-interact" href="#home"
-                        >JERON CASTRO<span class="text-secondary">.</span></a
-                    >
+                    <a class="navbar-brand cursor-interact" href="#home">JERON CASTRO<span class="text-primary">.</span></a>
                     <div class="d-flex align-items-center">
                         <ul class="navbar-nav me-4">
                             <li class="nav-item"><a class="nav-link cursor-interact" href="#home">Home</a></li>
-                            <li class="nav-item"><a class="nav-link cursor-interact" href="#about">Bio</a></li>
-                            <li class="nav-item">
-                                <a class="nav-link cursor-interact" href="#competencies">Skills</a>
-                            </li>
-                            <li class="nav-item"><a class="nav-link cursor-interact" href="#projects">Works</a></li>
+                            <li class="nav-item"><a class="nav-link cursor-interact" href="#about">About</a></li>
+                            <li class="nav-item"><a class="nav-link cursor-interact" href="#skills">Skills</a></li>
+                            <li class="nav-item"><a class="nav-link cursor-interact" href="#projects">Work</a></li>
                         </ul>
-                        <a
-                            href="mailto:mrcastrojeronluther@gmail.com"
-                            class="btn btn-dark btn-sm fw-bold px-3 py-2 cursor-interact"
-                            >GET IN TOUCH</a
-                        >
+                        <a href="mailto:castrojeronlutheres@gmail.com" class="btn btn-dark fw-bold px-4 cursor-interact">Email Me</a>
                     </div>
                 </div>
             </nav>
 
-            <!-- 2. HERO -->
+            <!-- HERO -->
             <header id="home" class="hero">
                 <div id="tsparticles"></div>
                 <div class="container z-1 reveal">
-                    <div
-                        class="text-uppercase fw-bold text-secondary mb-3"
-                        style="letter-spacing: 2px; font-size: 0.8rem"
-                    >
-                        Software Engineer • Manila, PH
-                    </div>
-                    <h1 class="hero-title">AI-Augmented <br /><span style="color: #6b7280">Developer.</span></h1>
-                    <p class="hero-subtitle my-4 text-secondary mx-auto" style="max-width: 600px; font-size: 1.1rem">
-                        I am Jeron Luther E.S Castro.<br />
-                        <span class="fw-bold text-dark">{{ currentTypedText }}</span
-                        ><span style="animation: blink 1s infinite">|</span>
+                    
+                    <h1 class="hero-title">BUSINESS SYSTEMS <br /><span class="text-muted">DEVELOPER.</span></h1>
+                    <p class="hero-subtitle my-4 text-secondary mx-auto" style="max-width: 700px; font-size: 1.1rem">
+                        Specializing in spotting bottlenecks and fixing them with code. <br />
+                        <span class="fw-bold text-dark">{{ currentTypedText }}</span><span style="animation: blink 1s infinite">|</span>
                     </p>
                     <div class="d-flex justify-content-center gap-3">
-                        <a
-                            href="#projects"
-                            class="btn btn-dark fw-bold px-4 py-2 cursor-interact"
-                            style="background: var(--text-primary)"
-                            >View Projects</a
-                        >
-                        <a
-                            href="https://github.com/mrjeronluther"
-                            target="_blank"
-                            class="btn btn-outline-dark fw-bold px-4 py-2 cursor-interact"
-                            >GitHub</a
-                        >
+                        <a href="#projects" class="btn btn-dark btn-lg fw-bold cursor-interact">See My Work</a>
+                        <a href="https://github.com/mrjeronluther" target="_blank" class="btn btn-outline-dark btn-lg fw-bold cursor-interact">GitHub</a>
                     </div>
                 </div>
             </header>
 
-            <!-- 3. BIO & EXPERIENCE -->
+            <!-- ABOUT & RESUME CONTENT -->
             <section id="about" class="py-5">
                 <div class="container py-5">
-                    <!-- New Glass Wrapper Starts Here -->
                     <div class="glass-panel reveal">
-                        <div class="row align-items-start gx-5">
-                            <!-- Left: Image & Certifications -->
-                            <div class="col-lg-5 mb-5 mb-lg-0">
-                                <img
-                                    :src="profileImage"
-                                    @error="handleImageError"
-                                    alt="Jeron Profile"
-                                    class="profile-pic"
-                                />
-
-                                <div class="mt-4 bg-white border rounded p-4">
+                        <div class="row gx-5">
+                            <!-- Left: Personal -->
+                            <div class="col-lg-5">
+                                <img :src="profileImage" @error="handleImageError" alt="Jeron" class="profile-pic" />
+                                
+                                <div class="mt-4 bg-white p-4 rounded-4 border">
                                     <h5 class="fw-bold mb-3"><i class="fas fa-graduation-cap me-2"></i>Education</h5>
-                                    <!-- ... rest of your education code ... -->
-                                    <div class="mb-3">
-                                        <div class="fw-bold">Universidad De Manila</div>
-                                        <div class="small text-muted">
-                                            B.I.T - BTVTE major in Computer Programming Tech. (2019-2023)
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold">Manuel G. Araullo Highschool</div>
-                                        <div class="small text-muted">SHS: STEM (2012-2018)</div>
-                                    </div>
+                                    <div class="mb-1 fw-bold">Universidad De Manila</div>
+                                    <p class="small text-muted mb-0">Bachelor of Industrial Technology (BTVTE)</p>
+                                    <p class="small text-muted">Major in Computer Programming (2019 - 2023)</p>
+                                    <span class="badge bg-primary">Dean’s Lister (3rd Year, 2nd Semester)</span>
                                 </div>
 
-                                <div class="mt-4 bg-white border rounded p-4">
-                                    <h5
-                                        class="fw-bold mb-3 border-bottom pb-2 d-flex justify-content-between align-items-center"
-                                    >
-                                        <span><i class="fas fa-certificate me-2"></i>Certifications</span>
-                                        <span class="badge bg-dark text-white rounded-pill" style="font-size: 0.7rem"
-                                            >{{ certificates.length }}</span
-                                        >
-                                    </h5>
-                                    <div class="cert-list">
-                                        <div class="cert-item" v-for="(cert, index) in certificates" :key="index">
-                                            <div class="cert-date">{{ cert.date }}</div>
-                                            <div style="line-height: 1.2">{{ cert.name }}</div>
+                                <div class="mt-4 bg-white p-4 rounded-4 border">
+                                    <h5 class="fw-bold mb-3 border-bottom pb-2">Certifications</h5>
+                                    <div style="max-height: 300px; overflow-y: auto;">
+                                        <div class="mb-3" v-for="cert in certificates" :key="cert.name">
+                                            <div class="text-primary fw-bold" style="font-size: 0.75rem;">{{ cert.date }}</div>
+                                            <div class="small fw-bold">{{ cert.name }}</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Right: Work History -->
-                            <div class="col-lg-7" style="transition-delay: 100ms">
-                                <h6 class="text-uppercase text-secondary fw-bold mb-3">Professional Summary</h6>
-                                <h2 class="mb-4 fw-bold display-6">Architecting Logic</h2>
-                                <p class="text-secondary mb-5 lead fs-6">
-                                    Forward-thinking developer specializing in
-                                    <strong>AI-Augmented Software Engineering</strong>. I focus on logical architecture
-                                    and algorithmic problem-solving to rapidly deploy customized full-stack internal web
-                                    applications and automated workflows.
+                            <!-- Right: Professional Experience (Everything from Resume) -->
+                            <div class="col-lg-7 mt-5 mt-lg-0">
+                                <h6 class="text-primary fw-bold text-uppercase">Who I Am</h6>
+                                <h2 class="display-6 fw-bold mb-4">A Logic-First Developer</h2>
+                                <p class="lead text-secondary mb-5">
+                                    I'm Jeron Luther E.S. Castrp. I solve operational headaches through automation. I specialize in identifying process bottlenecks and 
+                                    fixing them with custom software. To date, my solutions have successfully **cut document processing time by 95%** 
+                                    while maintaining nearly 100% calculation accuracy.
                                 </p>
 
-                                <h4 class="fw-bold mb-4 border-bottom pb-2">Work Experience</h4>
+                                <h4 class="fw-bold border-bottom pb-2 mb-4">Work History</h4>
                                 <div class="timeline-box" v-for="job in experience" :key="job.role">
                                     <h5 class="fw-bold m-0">{{ job.role }}</h5>
-                                    <small
-                                        class="text-uppercase text-dark fw-bold"
-                                        style="font-size: 0.75rem; letter-spacing: 0.5px"
-                                        >{{ job.company }}</small
-                                    >
-                                    <div class="text-muted fw-bold small mb-2">{{ job.date }}</div>
-
-                                    <ul class="text-secondary small mt-2 ps-3" style="list-style: disc">
-                                        <li v-for="point in job.points" class="mb-1">{{ point }}</li>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-uppercase fw-bold text-muted small">{{ job.company }}</span>
+                                        <span class="badge bg-light text-dark border">{{ job.date }}</span>
+                                    </div>
+                                    <ul class="text-secondary small ps-3">
+                                        <li v-for="point in job.points" class="mb-2">{{ point }}</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- End Glass Panel -->
                 </div>
             </section>
 
-            <!-- 4. COMPETENCIES -->
-           <!-- 4. COMPETENCIES -->
-<section id="competencies" class="py-5 bg-white border-top">
-    <div class="container py-5">
-        <div class="section-header reveal">
-            <h2 class="display-6">Core Competencies</h2>
-            <p class="text-secondary">Translating vague needs into production-ready logic.</p>
-        </div>
-
-        <!-- Enhanced Competency Grid -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-6 col-lg-3 reveal cursor-interact" v-for="(comp, i) in competencies" :key="i">
-                <div class="competency-card">
-                    <div class="icon-wrapper">
-                        <i :class="comp.icon"></i>
+            <!-- SKILLS -->
+            <section id="skills" class="py-5 bg-white border-top">
+                <div class="container">
+                    <div class="text-center mb-5 reveal">
+                        <h2 class="display-6 fw-bold">My Technical Toolbox</h2>
+                        <p class="text-muted">The tech I use to build robust, scalable solutions.</p>
                     </div>
-                    <h6 class="fw-bold">{{ comp.title }}</h6>
-                    <p class="small text-secondary m-0 mt-2">{{ comp.desc }}</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Grouped Technical Stack -->
-        <div class="mt-5 reveal">
-            <div class="text-center mb-5">
-                <h3 class="fw-bold">Technical Stack</h3>
-                <p class="text-muted">Tools and languages I use to architect solutions</p>
-            </div>
-            
-            <div class="row g-4">
-                <!-- Loop through organized categories in Vue data -->
-                <div class="col-lg-4" v-for="(group, title) in organizedSkills" :key="title">
-                    <div class="tech-group-card h-100">
-                        <h6 class="text-uppercase fw-bold small mb-3 pb-2 border-bottom">{{ title }}</h6>
-                        <div class="d-flex flex-wrap">
-                            <div class="skill-chip cursor-interact" v-for="skill in group" :key="skill.name">
-                                <i :class="skill.icon"></i>
-                                {{ skill.name }}
+                    <div class="row g-4 reveal">
+                        <div class="col-lg-4" v-for="(group, title) in organizedSkills" :key="title">
+                            <div class="p-4 bg-light rounded-4 h-100 border">
+                                <h6 class="text-uppercase fw-bold text-primary mb-3 border-bottom pb-2">{{ title }}</h6>
+                                <div class="d-flex flex-wrap">
+                                    <div class="skill-chip cursor-interact" v-for="skill in group" :key="skill.name">
+                                        <i :class="[skill.icon, 'me-2']"></i>{{ skill.name }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</section>
+            </section>
 
-            <!-- 5. PROJECTS -->
+            <!-- PROJECT LIBRARY (Resume + documented projects) -->
             <section id="projects" class="py-5">
                 <div class="container py-5">
-                    <div class="section-header reveal">
-                        <h2 class="display-6">Selected Works</h2>
-                        <p class="text-secondary">Enterprise Internal Tools & Systems under Google Apps Script.</p>
+                    <div class="text-center mb-5 reveal">
+                        <h2 class="display-6 fw-bold">The Project Library</h2>
+                        <p class="text-muted">Every tool below was built to solve a specific business problem.</p>
                     </div>
 
                     <div class="row g-4">
-                        <div class="col-md-6" v-for="(project, i) in projects" :key="i">
-                            <div class="tilt-card reveal cursor-interact">
-                                <div class="img-container">
-                                    <img :src="project.image" alt="Thumbnail" />
+                        <div class="col-md-6 col-lg-4" v-for="(project, i) in projects" :key="i">
+                            <div class="project-card reveal cursor-interact">
+                                <div class="project-header">
+                                    <h5 class="m-0 fw-bold">{{ project.title }}</h5>
+                                    <small class="opacity-75">{{ project.type }}</small>
                                 </div>
                                 <div class="p-4 d-flex flex-column h-100">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <h5 class="fw-bold mb-1">{{ project.title }}</h5>
-                                        <span class="badge bg-dark text-white" style="font-size: 0.6rem"
-                                            >{{ project.type }}</span
-                                        >
+                                    <p class="text-secondary small mb-4" style="min-height: 60px;">{{ project.desc }}</p>
+                                    
+                                    <div class="bg-primary bg-opacity-10 p-3 rounded-3 mb-3">
+                                        <div class="fw-bold text-primary small"><i class="fas fa-bolt me-2"></i>THE IMPACT:</div>
+                                        <div class="small text-dark">{{ project.impact }}</div>
                                     </div>
-                                    <hr />
-                                    <p class="text-secondary small mb-3 flex-grow-1">{{ project.desc }}</p>
 
                                     <div class="mt-auto">
-                                        <div class="mb-3">
-                                            <span
-                                                class="badge bg-light text-secondary border me-1"
-                                                v-for="tag in project.tags"
-                                                >{{ tag }}</span
-                                            >
-                                        </div>
-                                        <div v-if="project.is_group" class="small text-muted mb-2 fst-italic">
-                                            Includes: {{ project.sub_projects }}
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <span class="badge bg-light text-secondary border" style="font-size: 0.65rem" v-for="tag in project.tags">{{ tag }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -681,289 +271,168 @@
                 </div>
             </section>
 
-            <!-- 6. FOOTER -->
+            <!-- FOOTER -->
             <footer class="py-5 bg-dark text-white text-center">
                 <div class="container">
-                    <h4 class="fw-bold ls-2 mb-1">JERON LUTHER E.S CASTRO</h4>
-                    <p class="text-secondary small mb-4">Malate, Manila | 0995-595-0115</p>
-
+                    <h2 class="fw-bold mb-1">JERON LUTHER E.S. CASTRO</h2>
+                    <p class="text-secondary small mb-4">Business Systems Developer | Manila City, PH</p>
                     <div class="d-flex justify-content-center gap-4 mb-4">
-                        <a
-                            href="https://github.com/mrjeronluther"
-                            target="_blank"
-                            class="text-white opacity-75 hover-white"
-                            ><i class="fab fa-github fa-2x"></i
-                        ></a>
-                        <a href="mailto:mrcastrojeronluther@gmail.com" class="text-white opacity-75 hover-white"
-                            ><i class="fas fa-envelope fa-2x"></i
-                        ></a>
+                        <a href="https://github.com/mrjeronluther" target="_blank" class="text-white opacity-75"><i class="fab fa-github fa-2x"></i></a>
+                        <a href="mailto:castrojeronlutheres@gmail.com" class="text-white opacity-75"><i class="fas fa-envelope fa-2x"></i></a>
                     </div>
-
-                    <hr class="mx-auto" style="width: 50px; border-color: gray" />
-                    <small class="text-secondary">&copy; 2026. Built with Vue 3.</small>
+                    <small class="text-secondary">&copy; 2026. Built with human vibes and Vue 3.</small>
                 </div>
             </footer>
 
-            <!-- MOBILE BOTTOM NAV -->
+            <!-- MOBILE NAV -->
             <nav class="mobile-nav d-lg-none">
                 <div class="mobile-nav-inner">
-                    <a href="#home" class="mobile-nav-item active"><i class="fas fa-home"></i></a>
-                    <a href="#about" class="mobile-nav-item"><i class="fas fa-user-tie"></i></a>
-                    <a href="#projects" class="mobile-nav-item"><i class="fas fa-layer-group"></i></a>
-                    <a href="mailto:mrcastrojeronluther@gmail.com" class="mobile-nav-item"
-                        ><i class="fas fa-envelope"></i
-                    ></a>
+                    <a href="#home" class="text-dark"><i class="fas fa-home"></i></a>
+                    <a href="#about" class="text-dark"><i class="fas fa-user"></i></a>
+                    <a href="#projects" class="text-dark"><i class="fas fa-laptop-code"></i></a>
+                    <a href="mailto:castrojeronlutheres@gmail.com" class="text-dark"><i class="fas fa-envelope"></i></a>
                 </div>
             </nav>
         </main>
 
-        <!-- SCRIPTS -->
         <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.12.0/tsparticles.slim.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- APP LOGIC -->
         <script>
             const app = Vue.createApp({
                 data() {
                     return {
-                        // IMAGE
-                        profileImage:
-                            "https://raw.githubusercontent.com/mrjeronluther/My-E-Portfolio/2d04d94f2920a26a915bfe6b9e5ee1823a4f2290/profilepic.png",
+                        profileImage: "https://raw.githubusercontent.com/mrjeronluther/My-E-Portfolio/2d04d94f2920a26a915bfe6b9e5ee1823a4f2290/profilepic.png",
+                        typedTextOptions: ["I build custom office apps.", "I fix broken business processes.", "I automate the boring stuff."],
+                        currentTypedText: "", charIndex: 0, typeOptionIndex: 0, isDeleting: false,
 
-                        // TYPEWRITER
-                        typedTextOptions: [
-                            "I architect full-stack tools.",
-                            "I automate complex workflows.",
-                            "I streamline data lifecycles.",
-                        ],
-                        currentTypedText: "",
-                        charIndex: 0,
-                        typeOptionIndex: 0,
-                        isDeleting: false,
-
-                        // WORK HISTORY
                         experience: [
                             {
-                                role: "Data Management Associate",
-                                company: "Luxury Global Malls (Megaworld)",
-                                date: "Nov 2023 - Present",
+                                role: "Business Systems Developer | Data Mgmt Associate",
+                                company: "Luxury Global Malls (Megaworld Subsidiary)",
+                                date: "2023 - Present",
                                 points: [
-                                    "Architected full-stack internal web apps using Vue.js 3, HTML5, & Apps Script.",
-                                    "Leveraged AI-Driven Development for a 40% reduction in time-to-market.",
-                                    "Automated data workflows streamlining operations across multiple groups.",
-                                    "Technical Consultant for Google Sheets databases and logic-first architecture.",
+                                    "I talk to teams to find out where they're losing time to 'human error' and turn those needs into custom software requirements.",
+                                    "Built three custom web apps and a specialized automation engine that handles the heavy data crunching, cutting manual work by 95%.",
+                                    "Developed and managed automated data pipelines that turn messy, scattered data into clear dashboards for the management team."
                                 ],
                             },
                             {
-                                role: "Technical Support (OJT)",
-                                company: "Universidad De Manila (Registrar)",
-                                date: "May 2022 - July 2023",
+                                role: "Technical Support Intern",
+                                company: "Universidad De Manila Registrar",
+                                date: "2022 - 2023",
                                 points: [
-                                    "Provided technical support to clerks in record management.",
-                                    "Handled university technical processes and hardware issues.",
+                                    "Created custom Excel formulas and scripts that automated registrar tasks, cutting down manual errors by 90%.",
+                                    "Validated and organized over 3,000 student records to keep the database accurate and secure."
                                 ],
                             },
                             {
-                                role: "IT Support (OJT)",
-                                company: "DPWH North District",
-                                date: "October 2018",
+                                role: "IT Support Intern",
+                                company: "DPWH North District Office",
+                                date: "2018",
                                 points: [
-                                    "Collaborated on network cable wiring and hardware installation.",
-                                    "Physical hardware maintenance projects.",
-                                ],
-                            },
+                                    "Got hands-on with the physical side of IT, including network cabling and hardware installation.",
+                                    "Assisted in maintaining and troubleshooting office computers and infrastructure."
+                                ]
+                            }
                         ],
 
-                        // ALL CERTIFICATES
                         certificates: [
-                            { date: "Jan 2024", name: "Introduction to Cybersecurity (CISCO)" },
-                            { date: "Oct 2023", name: "Java Programming (TESDA)" },
-                            { date: "Mar 2022", name: "Cyber Security Awareness: Phishing & Scamming (DICT)" },
-                            { date: "Feb 2022", name: "Data Mgmt: Naming Convention & Hierarchy (DICT)" },
-                            { date: "Feb 2022", name: "Creating a guessing game using Python Code" },
-                            { date: "Feb 2022", name: "Strengthening Research via Data Analytics (UDM)" },
-                            { date: "Feb 2022", name: "WebTech Conference 2022 (TUP)" },
-                            { date: "Feb 2022", name: "Introduction to Programming (TUP)" },
-                            { date: "Feb 2022", name: "IT Excellence: Data Science (Pateros Tech College)" },
-                            { date: "Feb 2022", name: "IT Excellence: Fraud & Risk Management (Pateros)" },
-                            { date: "Feb 2022", name: "IT Excellence: Frontend Dev w/ Javascript (Pateros)" },
-                            { date: "Feb 2022", name: "Work Smarter Using Tech to Your Advantage (ReSkills)" },
-                            { date: "May 2019", name: "Creative Web Design Level I (TESDA)" },
+                            { date: "2024", name: "Intro to Cybersecurity (Cisco Networking Academy)" },
+                            { date: "2023", name: "Java Programming (NC III) - TESDA" },
+                            { date: "2022", name: "Front-end Development JavaScript - Pateros Tech College" },
+                            { date: "2022", name: "Data Management & Naming Convention - DICT" },
+                            { date: "2022", name: "Fraud and Risk Management - Pateros Tech College" },
+                            { date: "2022", name: "Data Science Certification - Pateros Tech College" },
+                            { date: "2022", name: "Research via Data Analytics - Universidad De Manila" },
+                            { date: "2022", name: "Intro to Programming - Technological Institute of the Philippines" },
+                            { date: "2019", name: "Creative Web Design Level I - TESDA" },
+                            { date: "2022", name: "Cybersecurity Awareness - DICT" }
                         ],
 
-                        // COMPETENCIES
-                        competencies: [
-    { title: "Web Development", icon: "fas fa-code" },
-    { title: "Data Analysis", icon: "fas fa-chart-pie" },
-    { title: "Workflow Automation", icon: "fas fa-robot" },
-    { title: "Database Management", icon: "fas fa-database" },
-    { title: "Technical Support", icon: "fas fa-tools" },
-    { title: "Internal Consulting", icon: "fas fa-briefcase" }
-],
-
-
-                        // SKILLS
                         organizedSkills: {
-    "Development": [
-        { name: "HTML5 / CSS3", icon: "fab fa-html5" },
-        { name: "Vue.js / Laravel", icon: "fab fa-vuejs" },
-        { name: "JavaScript / TypeScript", icon: "fab fa-js" },
-        { name: "PHP / Java / C++", icon: "fas fa-terminal" },
-        { name: "Bootstrap / Tailwind", icon: "fab fa-bootstrap" }
-    ],
-    "Data & Backend": [
-        { name: "Microsoft SQL Server", icon: "fas fa-server" },
-        { name: "MySQL", icon: "fas fa-database" },
-        { name: "Inertia.js / REST APIs", icon: "fas fa-link" },
-        { name: "LookerStudio", icon: "fas fa-chart-bar" },
-        { name: "XAMPP / Apache", icon: "fas fa-cog" }
-    ],
-    "Automation & Infra": [
-        { name: "Google Apps Script", icon: "fas fa-file-code" },
-        { name: "ETL / Data Integration", icon: "fas fa-sync" },
-        { name: "VBA / Excel Macros", icon: "fas fa-file-excel" },
-        { name: "Python / AI Prompting", icon: "fab fa-python" },
-        { name: "WSL2 / Linux Management", icon: "fab fa-linux" }
-    ],
-    "Tools & Systems": [
-        { name: "Git / GitHub", icon: "fab fa-github" },
-        { name: "VS Code / IDEs", icon: "fas fa-keyboard" },
-        { name: "Database Security", icon: "fas fa-shield-alt" },
-        { name: "Network Cabling", icon: "fas fa-network-wired" },
-        { name: "Architecture (Draw.io)", icon: "fas fa-project-diagram" }
-    ]
-},
+                            "Coding & Web": [
+                                { name: "PHP (Laravel)", icon: "fab fa-php" },
+                                { name: "JavaScript (Vue.js)", icon: "fab fa-js" },
+                                { name: "TypeScript", icon: "fas fa-terminal" },
+                                { name: "Node.js", icon: "fab fa-node-js" },
+                                { name: "HTML5 / CSS3", icon: "fab fa-html5" }
+                            ],
+                            "Data & Databases": [
+                                { name: "MS SQL Server", icon: "fas fa-server" },
+                                { name: "MySQL / SSMS", icon: "fas fa-database" },
+                                { name: "Looker Studio", icon: "fas fa-chart-line" },
+                                { name: "ETL Pipelines", icon: "fas fa-filter" }
+                            ],
+                            "Modern Tools": [
+                                { name: "Prompt Engineering", icon: "fas fa-brain" },
+                                { name: "Google Apps Script", icon: "fas fa-file-code" },
+                                { name: "Python", icon: "fab fa-python" },
+                                { name: "VBA / Excel", icon: "fas fa-file-excel" },
+                                { name: "Linux / Git", icon: "fab fa-github" }
+                            ]
+                        },
 
-                        // PROJECTS
                         projects: [
-                            {
-                                title: "MCD Operations Ecosystem",
-                                type: "Enterprise Suite",
-                                image: "https://placehold.co/600x400/e5e7eb/111827?text=Ops+Ecosystem",
-                                desc: "A comprehensive suite of web-based internal tools architected for Departmental Operations. Includes automated routing and policy libraries.",
-                                tags: ["Vue.js", "Google Apps Script", "Web-Based"],
-                                is_group: true,
-                                sub_projects:
-                                    "Document Routing, Ops Checklist, Policy Library, Billing Systems, NOA Validation, Manpower Contract Finder.",
-                            },
-                            {
-                                title: "COGDevs Web Chat",
-                                type: "AI Project",
-                                image: "https://placehold.co/600x400/e5e7eb/111827?text=AI+Chat",
-                                desc: "Intelligent web chat interface powered by Google AI integration.",
-                                tags: ["JavaScript", "Google AI", "API"],
-                                is_group: false,
-                            },
-                            {
-                                title: "Smart Hydraulic Segregator",
-                                type: "Hardware Capstone",
-                                image: "https://placehold.co/600x400/e5e7eb/111827?text=Hardware+AI",
-                                desc: "Arduino-based machine that flattens trash and detects metallic vs non-metallic bottles with auto-segregation.",
-                                tags: ["C++", "Arduino", "Sensors"],
-                                is_group: false,
-                            },
-                            {
-                                title: "Student Mgmt. System",
-                                type: "Desktop App",
-                                image: "https://placehold.co/600x400/e5e7eb/111827?text=Java+App",
-                                desc: "Robust desktop application for managing student records and data.",
-                                tags: ["Java Swing", "MySQL", "Desktop"],
-                                is_group: false,
-                            },
-                        ],
+                            { title: "Automated Billing Engine", type: "Automation", desc: "A system that calculates complex billing rates for 32+ malls without manual data entry.", impact: "99% computation accuracy and 95% faster financial report closing.", tags: ["Apps Script", "JS ES6+"] },
+                            { title: "Document Tracking System", type: "Workflow", desc: "A web app that digitizes the company's internal memo approval process with real-time tracking.", impact: "Cut the document turnaround time by 95% and removed paperwork piles.", tags: ["Vue.js", "Bootstrap", "GAS"] },
+                            { title: "IntraTALKS AI", type: "Communication", desc: "An encrypted internal messaging platform that uses AI to summarize long office group chats.", impact: "Intelligent recaps help managers stay updated without reading every message.", tags: ["Gemini AI", "Encryption", "Vue"] },
+                            { title: "Payment Endorsement (PEP)", type: "FinTech", desc: "A high-security platform for generating and validating financial requests before payment.", impact: "Guaranteed zero-trust financial integrity for sensitive transactions.", tags: ["Vue 3", "Finance", "PDF Engine"] },
+                            { title: "Utility Management System", type: "ERP", desc: "A massive data engine for auditing Electricity, Water, and LPG consumption across properties.", impact: "Successfully manages 8M+ cells of data with absolute integrity.", tags: ["Database Audit", "Performance"] },
+                            { title: "Operations Reporting Suite", type: "Mobile App", desc: "A mobile-friendly tool for shift teams to report facility defects and track their repairs.", impact: "Achieved 90% adherence to standard operating procedures.", tags: ["Mobile", "Reporting", "API"] },
+                            { title: "Policy Library", type: "KMS", desc: "A searchable, version-controlled library for company policies and guidelines.", impact: "Reduced the time spent searching for internal info by 95%.", tags: ["KMS", "Search Engine"] },
+                            { title: "Student Mgmt Desktop", type: "Desktop App", desc: "A robust Java-based software for school admins to manage enrollment and grading.", impact: "Simplified student retrieval from a structured MySQL database.", tags: ["Java Swing", "MySQL"] },
+                            { title: "Smart Trash Segregator", type: "Hardware AI", desc: "An Arduino-based machine that automatically identifies bottle types and flattens them.", impact: "Capstone Project Lead; successfully integrated sensors with mechanical hardware.", tags: ["C++", "Arduino", "Sensors"] },
+                            { title: "Web Contact Manager", type: "Personal", desc: "A full CRUD application using Laravel and Vue 3 to master modern API structures.", impact: "Built as a technical refresh for 2026 deployment standards.", tags: ["Laravel", "SQL Server"] }
+                        ]
                     };
                 },
                 methods: {
-                    handleImageError(e) {
-                        console.warn("Local image block. Switching to Avatar.");
-                        e.target.src =
-                            "https://ui-avatars.com/api/?name=Jeron+Castro&background=111827&color=fff&size=512";
-                    },
+                    handleImageError(e) { e.target.src = "https://ui-avatars.com/api/?name=Jeron+Castro&background=111827&color=fff&size=512"; },
                     typeWriter() {
                         const current = this.typedTextOptions[this.typeOptionIndex];
-                        this.currentTypedText = this.isDeleting
-                            ? current.substring(0, this.charIndex - 1)
-                            : current.substring(0, this.charIndex + 1);
+                        this.currentTypedText = this.isDeleting ? current.substring(0, this.charIndex - 1) : current.substring(0, this.charIndex + 1);
                         this.charIndex += this.isDeleting ? -1 : 1;
-
                         let speed = this.isDeleting ? 40 : 80;
-                        if (!this.isDeleting && this.charIndex === current.length) {
-                            speed = 2000;
-                            this.isDeleting = true;
-                        } else if (this.isDeleting && this.charIndex === 0) {
-                            this.isDeleting = false;
-                            this.typeOptionIndex = (this.typeOptionIndex + 1) % this.typedTextOptions.length;
-                            speed = 500;
-                        }
-
+                        if (!this.isDeleting && this.charIndex === current.length) { speed = 2000; this.isDeleting = true; }
+                        else if (this.isDeleting && this.charIndex === 0) { this.isDeleting = false; this.typeOptionIndex = (this.typeOptionIndex + 1) % this.typedTextOptions.length; speed = 500; }
                         setTimeout(this.typeWriter, speed);
-                    },
+                    }
                 },
                 mounted() {
                     this.typeWriter();
-
                     if (window.tsParticles) {
                         tsParticles.load("tsparticles", {
                             fpsLimit: 60,
                             particles: {
-                                number: { value: 90, density: { enable: true, value_area: 800 } },
+                                number: { value: 30, density: { enable: true, value_area: 800 } },
                                 color: { value: "#111827" },
-                                opacity: { value: 0.65 },
-                                size: { value: 3.5, random: true },
-                                move: { enable: true, speed: 0.8 },
-                                links: { enable: true, color: "#111827", opacity: 0.45, width: 1.5, distance: 160 },
-                            },
-                            interactivity: {
-                                events: { onhover: { enable: true, mode: "grab" } },
-                                modes: { grab: { distance: 180, line_linked: { opacity: 0.8 } } },
+                                opacity: { value: 0.1 },
+                                size: { value: 2 },
+                                move: { enable: true, speed: 0.4 },
+                                links: { enable: true, color: "#111827", opacity: 0.1, distance: 150 },
                             },
                         });
                     }
-
-                    const observer = new IntersectionObserver(
-                        (entries) => {
-                            entries.forEach((e) => {
-                                if (e.isIntersecting) e.target.classList.add("active");
-                            });
-                        },
-                        { threshold: 0.1 }
-                    );
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("active"); });
+                    }, { threshold: 0.1 });
                     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
 
-                    // FIXED CURSOR ALIGNMENT LOGIC
                     if (window.matchMedia("(pointer: fine)").matches) {
                         const dot = document.querySelector(".cursor-dot");
                         const circle = document.querySelector(".cursor-circle");
-
                         window.addEventListener("mousemove", (e) => {
-                            // INCLUDE "translate(-50%, -50%)" IN THE JS TRANSFORMATION
                             dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-
                             circle.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%) scale(${document.body.classList.contains("cursor-interact") ? 1.5 : 0.5})`;
                         });
-
                         document.querySelectorAll("a, button, .cursor-interact").forEach((el) => {
                             el.addEventListener("mouseenter", () => document.body.classList.add("cursor-interact"));
                             el.addEventListener("mouseleave", () => document.body.classList.remove("cursor-interact"));
                         });
-
-                        document.querySelectorAll(".tilt-card").forEach((c) => {
-                            c.addEventListener("mousemove", (e) => {
-                                const r = c.getBoundingClientRect();
-                                const x = e.clientX - r.left - r.width / 2;
-                                const y = e.clientY - r.top - r.height / 2;
-                                c.style.transform = `perspective(1000px) rotateX(${-y / 20}deg) rotateY(${x / 20}deg) scale(1.02)`;
-                            });
-                            c.addEventListener(
-                                "mouseleave",
-                                () => (c.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`)
-                            );
-                        });
                     }
-
                     setTimeout(() => document.getElementById("loader").classList.add("hidden"), 800);
-                },
+                }
             }).mount("#app");
         </script>
     </body>
